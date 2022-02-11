@@ -22,8 +22,18 @@
 
 %ifarch x86_64
 %bcond_without svtav1
+%bcond_without mfx
+%bcond_without vmaf
 %else
 %bcond_with svtav1
+%bcond_with mfx
+%bcond_with vmaf
+%endif
+
+%ifarch s390 s390x
+%bcond_with dc1394
+%else
+%bcond_without dc1394
 %endif
 
 %if %{with all_codecs}
@@ -97,7 +107,9 @@ BuildRequires:  gnupg2
 BuildRequires:  gsm-devel
 BuildRequires:  ladspa-devel
 BuildRequires:  lame-devel
+%ifnarch s390 s390x
 BuildRequires:  libcrystalhd-devel
+%endif
 BuildRequires:  libmysofa-devel
 BuildRequires:  make
 BuildRequires:  nasm
@@ -119,16 +131,12 @@ BuildRequires:  pkgconfig(gnutls)
 BuildRequires:  pkgconfig(ilbc)
 BuildRequires:  pkgconfig(jack)
 BuildRequires:  pkgconfig(libass)
-BuildRequires:  pkgconfig(libavc1394)
 BuildRequires:  pkgconfig(libbluray)
 BuildRequires:  pkgconfig(libbs2b)
 BuildRequires:  pkgconfig(libcdio)
 BuildRequires:  pkgconfig(libcdio_paranoia)
 BuildRequires:  pkgconfig(libchromaprint)
-BuildRequires:  pkgconfig(libdc1394-2)
 BuildRequires:  pkgconfig(libdrm)
-BuildRequires:  pkgconfig(libiec61883)
-BuildRequires:  pkgconfig(libmfx) < 2.0
 BuildRequires:  pkgconfig(libmodplug)
 BuildRequires:  pkgconfig(libomxil-bellagio)
 BuildRequires:  pkgconfig(libopenjp2)
@@ -140,7 +148,6 @@ BuildRequires:  pkgconfig(libv4l2)
 BuildRequires:  pkgconfig(libva)
 BuildRequires:  pkgconfig(libva-drm)
 BuildRequires:  pkgconfig(libva-x11)
-BuildRequires:  pkgconfig(libvmaf)
 BuildRequires:  pkgconfig(libwebp)
 BuildRequires:  pkgconfig(libxml-2.0)
 BuildRequires:  pkgconfig(libzmq)
@@ -182,8 +189,16 @@ BuildRequires:  texinfo
 BuildRequires:  pkgconfig(opencore-amrnb)
 BuildRequires:  pkgconfig(vo-amrwbenc)
 %endif
+%if %{with dc1394}
+BuildRequires:  pkgconfig(libavc1394)
+BuildRequires:  pkgconfig(libdc1394-2)
+BuildRequires:  pkgconfig(libiec61883)
+%endif
 %if %{with rtmp}
 BuildRequires:  librtmp-devel
+%endif
+%if %{with mfx}
+BuildRequires:  pkgconfig(libmfx) < 2.0
 %endif
 %if %{with svtav1}
 BuildRequires:  pkgconfig(SvtAv1Enc) >= 0.8.4
@@ -197,6 +212,9 @@ BuildRequires:  pkgconfig(x264)
 %endif
 %if %{with x265}
 BuildRequires:  pkgconfig(x265)
+%endif
+%if %{with vmaf}
+BuildRequires:  pkgconfig(libvmaf)
 %endif
 %if %{with xvid}
 BuildRequires:  xvidcore-devel
@@ -521,7 +539,9 @@ cp -a doc/examples/{*.c,Makefile,README} _doc/examples/
     --enable-libbs2b \
     --enable-libcdio \
     --enable-libdav1d \
+%if %{with dc1394}
     --enable-libdc1394 \
+%endif
     --enable-libdrm \
     --enable-libfdk-aac \
     --enable-libfontconfig \
@@ -547,7 +567,9 @@ cp -a doc/examples/{*.c,Makefile,README} _doc/examples/
     --enable-libtheora \
     --enable-libtwolame \
     --enable-libvidstab \
+%if %{with vmaf}
     --enable-libvmaf \
+%endif
     --enable-libvorbis \
     --enable-libv4l2 \
     --enable-libvpx \
@@ -558,7 +580,9 @@ cp -a doc/examples/{*.c,Makefile,README} _doc/examples/
 %if %{with lto}
   --enable-lto \
 %endif
+%if %{with mfx}
     --enable-libmfx \
+%endif
     --enable-vaapi \
     --enable-vdpau \
 %if %{with amr}
