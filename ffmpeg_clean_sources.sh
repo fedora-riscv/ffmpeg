@@ -1,0 +1,1239 @@
+#!/bin/bash
+#
+# Copyright (c) 2022      Andreas Schneider <asn@cryptomilk.org>
+#
+# This program is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with this program.  If not, see <http://www.gnu.org/licenses/>.
+#
+# shellcheck disable=2181
+
+FF_PKGNAME="ffmpeg"
+FF_PKGNAME_SUFFIX="-free"
+FF_VERSION="$(rpmspec -P ./*.spec | grep ^Version | sed -e 's/Version:[ ]*//g')"
+FF_TARBALL_URL="https://ffmpeg.org/releases/${FF_PKGNAME}-${FF_VERSION}.tar.xz"
+FF_TARBALL="$(basename "${FF_TARBALL_URL}")"
+FF_GPG_ARMOR_FILE="${FF_TARBALL}.asc"
+FF_PKG_DIR="$(pwd)"
+FF_KEYRING="${FF_PKG_DIR}/ffmpeg.keyring"
+FF_TMPDIR=$(mktemp --tmpdir -d ffmpeg-XXXXXXXX)
+FF_PATH="${FF_TMPDIR}/${FF_PKGNAME}-${FF_VERSION}"
+
+cleanup_tmpdir() {
+    # shellcheck disable=2164
+    popd 2>/dev/null
+    rm -rf "${FF_TMPDIR}"
+}
+trap cleanup_tmpdir SIGINT
+
+cleanup_and_exit()
+{
+    cleanup_tmpdir
+
+    if test "$1" = 0 -o -z "$1"; then
+        exit 0
+    else
+        # shellcheck disable=2086
+        exit ${1}
+    fi
+}
+
+function usage()
+{
+    echo "Usage: $(basename "${0}") BUILD_LOG"
+    cleanup_and_exit 0
+}
+
+if [[ $# -lt 1 ]]; then
+    usage
+fi
+
+build_log="$(readlink -f "${1}")"
+if [[ -z "${build_log}" ]] || [[ ! -r "${build_log}" ]]; then
+    echo "Build log doesn't exist: %{build_log}"
+    cleanup_and_exit 1
+fi
+
+if [[ ! -w "${FF_TARBALL}" ]]; then
+    echo ">>> Downloading tarball and signature"
+    wget "${FF_TARBALL_URL}"
+    wget "${FF_TARBALL_URL}.asc"
+fi
+
+echo ">>> Verifying ${FF_TARBALL} GPG signature"
+gpgv2 --quiet --keyring "${FF_KEYRING}" "${FF_GPG_ARMOR_FILE}" "${FF_TARBALL}"
+if [ $? -ne 0 ]; then
+    echo "ERROR: GPG signature verification failed"
+    cleanup_and_exit 1
+fi
+echo
+
+echo ">>> Unpacking ${FF_TARBALL}"
+
+tar -xf "${FF_TARBALL}" -C "${FF_TMPDIR}"
+if [ $? -ne 0 ]; then
+    echo "ERROR: Failed to unpack ${FF_TARBALL}"
+    cleanup_and_exit 1
+fi
+
+other_files=(CONTRIBUTING.md
+             COPYING.GPLv2
+             COPYING.GPLv3
+             COPYING.LGPLv2.1
+             COPYING.LGPLv3
+             CREDITS
+             Changelog
+             INSTALL.md
+             LICENSE.md
+             MAINTAINERS
+             README.md
+             RELEASE
+             RELEASE_NOTES
+             VERSION
+             configure)
+
+doc_files=(doc/APIchanges
+           doc/Doxyfile
+           doc/authors.texi
+           doc/bitstream_filters.texi
+           doc/bootstrap.min.css
+           doc/build_system.txt
+           doc/codecs.texi
+           doc/decoders.texi
+           doc/default.css
+           doc/demuxers.texi
+           doc/dev_community/community.md
+           doc/dev_community/resolution_process.md
+           doc/developer.texi
+           doc/devices.texi
+           doc/doxy-wrapper.sh
+           doc/encoders.texi
+           doc/errno.txt
+           doc/examples/Makefile.example
+           doc/examples/README
+           doc/examples/avio_list_dir.c
+           doc/examples/avio_reading.c
+           doc/examples/decode_audio.c
+           doc/examples/decode_video.c
+           doc/examples/demuxing_decoding.c
+           doc/examples/encode_audio.c
+           doc/examples/encode_video.c
+           doc/examples/extract_mvs.c
+           doc/examples/filter_audio.c
+           doc/examples/filtering_audio.c
+           doc/examples/filtering_video.c
+           doc/examples/http_multiclient.c
+           doc/examples/hw_decode.c
+           doc/examples/metadata.c
+           doc/examples/muxing.c
+           doc/examples/qsvdec.c
+           doc/examples/remuxing.c
+           doc/examples/resampling_audio.c
+           doc/examples/scaling_video.c
+           doc/examples/transcode_aac.c
+           doc/examples/transcoding.c
+           doc/examples/vaapi_encode.c
+           doc/examples/vaapi_transcode.c
+           doc/faq.texi
+           doc/fate.texi
+           doc/fate_config.sh.template
+           doc/ffmpeg-bitstream-filters.texi
+           doc/ffmpeg-codecs.texi
+           doc/ffmpeg-devices.texi
+           doc/ffmpeg-filters.texi
+           doc/ffmpeg-formats.texi
+           doc/ffmpeg-protocols.texi
+           doc/ffmpeg-resampler.texi
+           doc/ffmpeg-scaler.texi
+           doc/ffmpeg-utils.texi
+           doc/ffmpeg.texi
+           doc/ffmpeg.txt
+           doc/ffplay.texi
+           doc/ffprobe.texi
+           doc/ffprobe.xsd
+           doc/fftools-common-opts.texi
+           doc/filter_design.txt
+           doc/filters.texi
+           doc/formats.texi
+           doc/general.texi
+           doc/general_contents.texi
+           doc/git-howto.texi
+           doc/indevs.texi
+           doc/issue_tracker.txt
+           doc/lexicon
+           doc/libav-merge.txt
+           doc/libavcodec.texi
+           doc/libavdevice.texi
+           doc/libavfilter.texi
+           doc/libavformat.texi
+           doc/libavutil.texi
+           doc/libswresample.texi
+           doc/libswscale.texi
+           doc/mailing-list-faq.texi
+           doc/metadata.texi
+           doc/mips.txt
+           doc/multithreading.txt
+           doc/muxers.texi
+           doc/nut.texi
+           doc/optimization.txt
+           doc/outdevs.texi
+           doc/patchwork
+           doc/platform.texi
+           doc/protocols.texi
+           doc/rate_distortion.txt
+           doc/resampler.texi
+           doc/scaler.texi
+           doc/snow.txt
+           doc/style.min.css
+           doc/swresample.txt
+           doc/swscale.txt
+           doc/t2h.init
+           doc/t2h.pm
+           doc/tablegen.txt
+           doc/texi2pod.pl
+           doc/texidep.pl
+           doc/transforms.md
+           doc/undefined.txt
+           doc/utils.texi
+           doc/writing_filters.txt)
+
+version_scripts=(libavcodec/libavcodec.v
+                 libswscale/libswscale.v
+                 libavfilter/libavfilter.v
+                 libavutil/libavutil.v
+                 libavdevice/libavdevice.v
+                 libswresample/libswresample.v
+                 libavformat/libavformat.v
+                 libpostproc/libpostproc.v)
+
+build_files=(ffbuild/arch.mak
+             ffbuild/bin2c.c
+             ffbuild/common.mak
+             ffbuild/library.mak
+             ffbuild/libversion.sh
+             ffbuild/pkgconfig_generate.sh
+             ffbuild/version.sh)
+
+make_files=(Makefile
+            doc/Makefile
+            doc/examples/Makefile
+            fftools/Makefile
+            libavcodec/Makefile
+            libavcodec/aarch64/Makefile
+            libavcodec/alpha/Makefile
+            libavcodec/arm/Makefile
+            libavcodec/loongarch/Makefile
+            libavcodec/mips/Makefile
+            libavcodec/neon/Makefile
+            libavcodec/ppc/Makefile
+            libavcodec/x86/Makefile
+            libavdevice/Makefile
+            libavfilter/Makefile
+            libavfilter/aarch64/Makefile
+            libavfilter/dnn/Makefile
+            libavfilter/x86/Makefile
+            libavformat/Makefile
+            libavutil/Makefile
+            libavutil/aarch64/Makefile
+            libavutil/arm/Makefile
+            libavutil/loongarch/Makefile
+            libavutil/mips/Makefile
+            libavutil/ppc/Makefile
+            libavutil/x86/Makefile
+            libpostproc/Makefile
+            libswresample/Makefile
+            libswresample/aarch64/Makefile
+            libswresample/arm/Makefile
+            libswresample/x86/Makefile
+            libswscale/Makefile
+            libswscale/aarch64/Makefile
+            libswscale/arm/Makefile
+            libswscale/ppc/Makefile
+            libswscale/x86/Makefile
+            tools/Makefile)
+
+test_files=(tests/Makefile
+            tests/api/Makefile
+            tests/checkasm/Makefile
+            tests/fate/aac.mak
+            tests/fate/ac3.mak
+            tests/fate/acodec.mak
+            tests/fate/adpcm.mak
+            tests/fate/alac.mak
+            tests/fate/als.mak
+            tests/fate/amrnb.mak
+            tests/fate/amrwb.mak
+            tests/fate/api.mak
+            tests/fate/apng.mak
+            tests/fate/atrac.mak
+            tests/fate/audio.mak
+            tests/fate/bmp.mak
+            tests/fate/build.mak
+            tests/fate/caf.mak
+            tests/fate/canopus.mak
+            tests/fate/cbs.mak
+            tests/fate/cdxl.mak
+            tests/fate/checkasm.mak
+            tests/fate/concatdec.mak
+            tests/fate/cover-art.mak
+            tests/fate/dca.mak
+            tests/fate/demux.mak
+            tests/fate/dfa.mak
+            tests/fate/dnn.mak
+            tests/fate/dnxhd.mak
+            tests/fate/dpcm.mak
+            tests/fate/ea.mak
+            tests/fate/exif.mak
+            tests/fate/ffmpeg.mak
+            tests/fate/ffprobe.mak
+            tests/fate/fft.mak
+            tests/fate/fifo-muxer.mak
+            tests/fate/filter-audio.mak
+            tests/fate/filter-video.mak
+            tests/fate/fits.mak
+            tests/fate/flac.mak
+            tests/fate/flvenc.mak
+            tests/fate/gapless.mak
+            tests/fate/gif.mak
+            tests/fate/h264.mak
+            tests/fate/hap.mak
+            tests/fate/hevc.mak
+            tests/fate/hlsenc.mak
+            tests/fate/hw.mak
+            tests/fate/id3v2.mak
+            tests/fate/image.mak
+            tests/fate/indeo.mak
+            tests/fate/lavf-audio.mak
+            tests/fate/lavf-container.mak
+            tests/fate/lavf-image.mak
+            tests/fate/lavf-image2pipe.mak
+            tests/fate/lavf-video.mak
+            tests/fate/libavcodec.mak
+            tests/fate/libavdevice.mak
+            tests/fate/libavformat.mak
+            tests/fate/libavutil.mak
+            tests/fate/libswresample.mak
+            tests/fate/libswscale.mak
+            tests/fate/lossless-audio.mak
+            tests/fate/lossless-video.mak
+            tests/fate/matroska.mak
+            tests/fate/microsoft.mak
+            tests/fate/monkeysaudio.mak
+            tests/fate/mov.mak
+            tests/fate/mp3.mak
+            tests/fate/mpc.mak
+            tests/fate/mpeg4.mak
+            tests/fate/mpegps.mak
+            tests/fate/mpegts.mak
+            tests/fate/mxf.mak
+            tests/fate/oma.mak
+            tests/fate/opus.mak
+            tests/fate/pcm.mak
+            tests/fate/pixfmt.mak
+            tests/fate/pixlet.mak
+            tests/fate/probe.mak
+            tests/fate/prores.mak
+            tests/fate/qt.mak
+            tests/fate/qtrle.mak
+            tests/fate/real.mak
+            tests/fate/screen.mak
+            tests/fate/seek.mak
+            tests/fate/segment.mak
+            tests/fate/source.mak
+            tests/fate/speedhq.mak
+            tests/fate/subtitles.mak
+            tests/fate/truehd.mak
+            tests/fate/utvideo.mak
+            tests/fate/vcodec.mak
+            tests/fate/video.mak
+            tests/fate/voice.mak
+            tests/fate/vorbis.mak
+            tests/fate/vpx.mak
+            tests/fate/vqf.mak
+            tests/fate/wavpack.mak
+            tests/fate/wma.mak
+            tests/fate/xvid.mak)
+
+header_files=(compat/atomics/gcc/stdatomic.h
+              compat/cuda/dynlink_loader.h
+              compat/va_copy.h
+              compat/w32dlfcn.h
+              fftools/cmdutils.h
+              fftools/ffmpeg.h
+              libavcodec/aac_ac3_parser.h
+              libavcodec/aac_defines.h
+              libavcodec/aandcttab.h
+              libavcodec/ac3.h
+              libavcodec/ac3_channel_layout_tab.h
+              libavcodec/ac3_parser.h
+              libavcodec/ac3_parser_internal.h
+              libavcodec/ac3dec.c
+              libavcodec/ac3dec.h
+              libavcodec/ac3dec_data.h
+              libavcodec/ac3dsp.h
+              libavcodec/ac3enc.h
+              libavcodec/ac3enc_template.c
+              libavcodec/ac3tab.h
+              libavcodec/adts_header.h
+              libavcodec/adts_parser.h
+              libavcodec/adx.h
+              libavcodec/apng.h
+              libavcodec/arm/vp8dsp.h
+              libavcodec/ass.h
+              libavcodec/ass_split.h
+              libavcodec/atsc_a53.h
+              libavcodec/audio_frame_queue.h
+              libavcodec/audiodsp.h
+              libavcodec/av1.h
+              libavcodec/av1_parse.h
+              libavcodec/av1dec.h
+              libavcodec/avcodec.h
+              libavcodec/avdct.h
+              libavcodec/avfft.h
+              libavcodec/avs3.h
+              libavcodec/bethsoftvideo.h
+              libavcodec/bintext.h
+              libavcodec/bit_depth_template.c
+              libavcodec/blockdsp.h
+              libavcodec/bmp.h
+              libavcodec/bsf.h
+              libavcodec/bsf_internal.h
+              libavcodec/bswapdsp.h
+              libavcodec/bytestream.h
+              libavcodec/cabac.h
+              libavcodec/cavs.h
+              libavcodec/cavsdsp.h
+              libavcodec/cbrt_data.h
+              libavcodec/cbrt_tablegen.h
+              libavcodec/cbs.h
+              libavcodec/cbs_av1.h
+              libavcodec/cbs_av1_syntax_template.c
+              libavcodec/cbs_bsf.h
+              libavcodec/cbs_h264.h
+              libavcodec/cbs_h2645.h
+              libavcodec/cbs_h264_syntax_template.c
+              libavcodec/cbs_h265.h
+              libavcodec/cbs_h265_syntax_template.c
+              libavcodec/cbs_internal.h
+              libavcodec/cbs_jpeg.h
+              libavcodec/cbs_mpeg2.h
+              libavcodec/cbs_mpeg2_syntax_template.c
+              libavcodec/cbs_sei.h
+              libavcodec/cbs_sei_syntax_template.c
+              libavcodec/cbs_vp9.h
+              libavcodec/cbs_vp9_syntax_template.c
+              libavcodec/cga_data.h
+              libavcodec/codec.h
+              libavcodec/codec2utils.h
+              libavcodec/codec_desc.h
+              libavcodec/codec_id.h
+              libavcodec/codec_par.h
+              libavcodec/copy_block.h
+              libavcodec/d3d11va.h
+              libavcodec/dca.h
+              libavcodec/dca_core.h
+              libavcodec/dca_exss.h
+              libavcodec/dca_lbr.h
+              libavcodec/dca_sample_rate_tab.h
+              libavcodec/dca_syncwords.h
+              libavcodec/dca_xll.h
+              libavcodec/dcadata.h
+              libavcodec/dcadct.h
+              libavcodec/dcadec.h
+              libavcodec/dcadsp.h
+              libavcodec/dcaenc.h
+              libavcodec/dcahuff.h
+              libavcodec/dcamath.h
+              libavcodec/dct.h
+              libavcodec/dct32.h
+              libavcodec/dct32_template.c
+              libavcodec/decode.h
+              libavcodec/defs.h
+              libavcodec/dirac.h
+              libavcodec/dirac_arith.h
+              libavcodec/dirac_dwt.h
+              libavcodec/dirac_dwt_template.c
+              libavcodec/dirac_vlc.h
+              libavcodec/diracdsp.h
+              libavcodec/diractab.h
+              libavcodec/dnxhddata.h
+              libavcodec/dolby_e.h
+              libavcodec/dovi_rpu.h
+              libavcodec/dv.h
+              libavcodec/dv_profile.h
+              libavcodec/dv_profile_internal.h
+              libavcodec/dvaudio.h
+              libavcodec/dvbtxt.h
+              libavcodec/dxva2.h
+              libavcodec/dynamic_hdr10_plus.h
+              libavcodec/eac3_data.h
+              libavcodec/eac3dec.c
+              libavcodec/eac3enc.h
+              libavcodec/elbg.h
+              libavcodec/encode.h
+              libavcodec/error_resilience.h
+              libavcodec/exif.h
+              libavcodec/exrdsp.h
+              libavcodec/faandct.h
+              libavcodec/faanidct.h
+              libavcodec/faxcompr.h
+              libavcodec/fdctdsp.h
+              libavcodec/fft-internal.h
+              libavcodec/fft.h
+              libavcodec/fft_table.h
+              libavcodec/fft_template.c
+              libavcodec/ffv1.h
+              libavcodec/ffv1_template.c
+              libavcodec/ffv1dec_template.c
+              libavcodec/ffv1enc_template.c
+              libavcodec/fits.h
+              libavcodec/flac.h
+              libavcodec/flacdata.h
+              libavcodec/flacdsp.h
+              libavcodec/flacdsp_lpc_template.c
+              libavcodec/flacdsp_template.c
+              libavcodec/flv.h
+              libavcodec/fmtconvert.h
+              libavcodec/frame_thread_encoder.h
+              libavcodec/g723_1.h
+              libavcodec/g729.h
+              libavcodec/get_bits.h
+              libavcodec/gif.h
+              libavcodec/golomb.h
+              libavcodec/gsm.h
+              libavcodec/gsmdec_data.h
+              libavcodec/gsmdec_template.c
+              libavcodec/h261.h
+              libavcodec/h263.h
+              libavcodec/h263_parser.h
+              libavcodec/h263data.h
+              libavcodec/h263dsp.h
+              libavcodec/h264.h
+              libavcodec/h2645_parse.h
+              libavcodec/h264_levels.h
+              libavcodec/h264_parse.h
+              libavcodec/h264_ps.h
+              libavcodec/h264_sei.h
+              libavcodec/h264addpx_template.c
+              libavcodec/h264chroma.h
+              libavcodec/h264chroma_template.c
+              libavcodec/h264data.h
+              libavcodec/h264dec.h
+              libavcodec/h264dsp.h
+              libavcodec/h264dsp_template.c
+              libavcodec/h264idct.h
+              libavcodec/h264idct_template.c
+              libavcodec/h264pred.h
+              libavcodec/h264pred_template.c
+              libavcodec/h264qpel.h
+              libavcodec/h265_profile_level.h
+              libavcodec/h274.h
+              libavcodec/half2float.h
+              libavcodec/hap.h
+              libavcodec/hevc.h
+              libavcodec/hevc_data.h
+              libavcodec/hevc_parse.h
+              libavcodec/hevc_ps.h
+              libavcodec/hevc_sei.h
+              libavcodec/hevcdec.h
+              libavcodec/hevcdsp.h
+              libavcodec/hevcpred.h
+              libavcodec/hpeldsp.h
+              libavcodec/hpel_template.c
+              libavcodec/htmlsubtitles.h
+              libavcodec/huffman.h
+              libavcodec/huffyuv.h
+              libavcodec/huffyuvdsp.h
+              libavcodec/huffyuvencdsp.h
+              libavcodec/hwaccels.h
+              libavcodec/hwconfig.h
+              libavcodec/ilbcdata.h
+              libavcodec/idctdsp.h
+              libavcodec/iirfilter.h
+              libavcodec/internal.h
+              libavcodec/intrax8.h
+              libavcodec/intrax8dsp.h
+              libavcodec/jacosub.h
+              libavcodec/jfdctint_template.c
+              libavcodec/jni.h
+              libavcodec/jpegls.h
+              libavcodec/jpeg2000.h
+              libavcodec/jpeg2000dwt.h
+              libavcodec/jpeg2000dsp.h
+              libavcodec/jpeglsdec.h
+              libavcodec/jpegtables.h
+              libavcodec/jpegtabs.h
+              libavcodec/kbdwin.h
+              libavcodec/lcl.h
+              libavcodec/libopus.h
+              libavcodec/libvpx.h
+              libavcodec/libwebpenc_common.h
+              libavcodec/lossless_videodsp.h
+              libavcodec/lossless_videoencdsp.h
+              libavcodec/lpc.h
+              libavcodec/lzw.h
+              libavcodec/mathops.h
+              libavcodec/mdct15.h
+              libavcodec/mdct_template.c
+              libavcodec/me_cmp.h
+              libavcodec/mediacodec.h
+              libavcodec/mjpeg.h
+              libavcodec/mjpegdec.h
+              libavcodec/mjpegenc.h
+              libavcodec/mjpegenc_common.h
+              libavcodec/mjpegenc_huffman.h
+              libavcodec/mlp.h
+              libavcodec/mlp_parse.h
+              libavcodec/motion_est.h
+              libavcodec/motion_est_template.c
+              libavcodec/mpeg12.h
+              libavcodec/mpeg12data.h
+              libavcodec/mpeg12vlc.h
+              libavcodec/mpeg4audio.h
+              libavcodec/mpeg4audio_sample_rates.h
+              libavcodec/mpeg4data.h
+              libavcodec/mpeg4video.h
+              libavcodec/mpeg4video_parser.h
+              libavcodec/mpeg_er.h
+              libavcodec/mpegaudio.h
+              libavcodec/mpegaudio_tablegen.h
+              libavcodec/mpegaudiodata.h
+              libavcodec/mpegaudiodec_common_tablegen.h
+              libavcodec/mpegaudiodec_template.c
+              libavcodec/mpegaudiodecheader.h
+              libavcodec/mpegaudiodsp.h
+              libavcodec/mpegaudiodsp_template.c
+              libavcodec/mpegaudioenc_template.c
+              libavcodec/mpegaudiotab.h
+              libavcodec/mpegaudiotabs.h
+              libavcodec/mpegpicture.h
+              libavcodec/mpegutils.h
+              libavcodec/mpegvideo.h
+              libavcodec/mpegvideodata.h
+              libavcodec/mpegvideodsp.h
+              libavcodec/mpegvideoencdsp.h
+              libavcodec/mqc.h
+              libavcodec/msgsmdec.h
+              libavcodec/msmpeg4.h
+              libavcodec/msmpeg4data.h
+              libavcodec/msrledec.h
+              libavcodec/nvdec.h
+              libavcodec/options_table.h
+              libavcodec/opus.h
+              libavcodec/opus_celt.h
+              libavcodec/opus_pvq.h
+              libavcodec/opus_rc.h
+              libavcodec/opusdsp.h
+              libavcodec/opusenc.h
+              libavcodec/opusenc_psy.h
+              libavcodec/opusenc_utils.h
+              libavcodec/opustab.h
+              libavcodec/packet.h
+              libavcodec/packet_internal.h
+              libavcodec/paf.h
+              libavcodec/parser.h
+              libavcodec/pcm_tablegen.h
+              libavcodec/pel_template.c
+              libavcodec/pixblockdsp.h
+              libavcodec/pixels.h
+              libavcodec/png.h
+              libavcodec/pngdsp.h
+              libavcodec/pnm.h
+              libavcodec/profiles.h
+              libavcodec/psymodel.h
+              libavcodec/pthread_internal.h
+              libavcodec/put_bits.h
+              libavcodec/qpeldsp.h
+              libavcodec/qpel_template.c
+              libavcodec/qsv.h
+              libavcodec/qsv_internal.h
+              libavcodec/qsvenc.h
+              libavcodec/rangecoder.h
+              libavcodec/ratecontrol.h
+              libavcodec/raw.h
+              libavcodec/rdft.h
+              libavcodec/rectangle.h
+              libavcodec/rl.h
+              libavcodec/rle.h
+              libavcodec/rnd_avg.h
+              libavcodec/rv10.h
+              libavcodec/sbc.h
+              libavcodec/sbr.h
+              libavcodec/sbrdsp.h
+              libavcodec/sbrdsp_template.c
+              libavcodec/sei.h
+              libavcodec/sgi.h
+              libavcodec/simple_idct.h
+              libavcodec/simple_idct_template.c
+              libavcodec/sinewin.h
+              libavcodec/sinewin_tablegen.h
+              libavcodec/sp5x.h
+              libavcodec/speedhqenc.h
+              libavcodec/startcode.h
+              libavcodec/sunrast.h
+              libavcodec/synth_filter.h
+              libavcodec/tak.h
+              libavcodec/targa.h
+              libavcodec/texturedsp.h
+              libavcodec/thread.h
+              libavcodec/tiff.h
+              libavcodec/tiff_common.h
+              libavcodec/tiff_data.h
+              libavcodec/to_upper4.h
+              libavcodec/ttmlenc.h
+              libavcodec/unary.h
+              libavcodec/v210dec.h
+              libavcodec/v210enc.h
+              libavcodec/v210_template.c
+              libavcodec/v4l2_buffers.h
+              libavcodec/v4l2_context.h
+              libavcodec/v4l2_fmt.h
+              libavcodec/v4l2_m2m.h
+              libavcodec/vaapi_decode.h
+              libavcodec/vaapi_encode.h
+              libavcodec/vaapi_hevc.h
+              libavcodec/vc1.h
+              libavcodec/vc1_common.h
+              libavcodec/vc1_pred.h
+              libavcodec/vc1acdata.h
+              libavcodec/vc1data.h
+              libavcodec/vc1dsp.h
+              libavcodec/vdpau.h
+              libavcodec/vdpau_internal.h
+              libavcodec/version.h
+              libavcodec/videodsp.h
+              libavcodec/videodsp_template.c
+              libavcodec/videotoolbox.h
+              libavcodec/vlc.h
+              libavcodec/vorbis.h
+              libavcodec/vorbis_enc_data.h
+              libavcodec/vorbis_parser.h
+              libavcodec/vorbis_parser_internal.h
+              libavcodec/vorbisdsp.h
+              libavcodec/vp3data.h
+              libavcodec/vp3dsp.h
+              libavcodec/vp4data.h
+              libavcodec/vp56.h
+              libavcodec/vp56data.h
+              libavcodec/vp56dsp.h
+              libavcodec/vp5data.h
+              libavcodec/vp6data.h
+              libavcodec/vp8.h
+              libavcodec/vp8data.h
+              libavcodec/vp8dsp.h
+              libavcodec/vp9.h
+              libavcodec/vp9_mc_template.c
+              libavcodec/vp9data.h
+              libavcodec/vp9dec.h
+              libavcodec/vp9dsp.h
+              libavcodec/vp9dsp_template.c
+              libavcodec/vp9shared.h
+              libavcodec/wmv2.h
+              libavcodec/wmv2data.h
+              libavcodec/wmv2dsp.h
+              libavcodec/xiph.h
+              libavcodec/xvididct.h
+              libavcodec/xvmc.h
+              libavcodec/xvmc_internal.h
+              libavcodec/xwd.h
+              libavcodec/aarch64/vp8dsp.h
+              libavcodec/ppc/audiodsp.c
+              libavcodec/ppc/blockdsp.c
+              libavcodec/ppc/fdctdsp.c
+              libavcodec/ppc/fft_init.c
+              libavcodec/ppc/fmtconvert_altivec.c
+              libavcodec/ppc/idctdsp.c
+              libavcodec/ppc/lossless_audiodsp_altivec.c
+              libavcodec/ppc/lossless_videodsp_altivec.c
+              libavcodec/ppc/pixblockdsp.c
+              libavcodec/ppc/vc1dsp_altivec.c
+              libavcodec/ppc/vorbisdsp_altivec.c
+              libavcodec/ppc/vp3dsp_altivec.c
+              libavcodec/ppc/vp8dsp_altivec.c
+              libavcodec/x86/constants.h
+              libavcodec/x86/fdct.h
+              libavcodec/x86/fft.h
+              libavcodec/x86/fpel.h
+              libavcodec/x86/hpeldsp.h
+              libavcodec/x86/hpeldsp_rnd_template.c
+              libavcodec/x86/idctdsp.h
+              libavcodec/x86/inline_asm.h
+              libavcodec/x86/mathops.h
+              libavcodec/x86/mpegvideoenc_qns_template.c
+              libavcodec/x86/mpegvideoenc_template.c
+              libavcodec/x86/rnd_template.c
+              libavcodec/x86/simple_idct.h
+              libavcodec/x86/vc1dsp.h
+              libavcodec/x86/vp56_arith.h
+              libavcodec/x86/vp9dsp_init.h
+              libavcodec/x86/vp9dsp_init_16bpp_template.c
+              libavdevice/alsa.h
+              libavdevice/avdevice.h
+              libavdevice/decklink_common.h
+              libavdevice/decklink_common_c.h
+              libavdevice/decklink_dec.h
+              libavdevice/decklink_enc.h
+              libavdevice/dshow_capture.h
+              libavdevice/fbdev_common.h
+              libavdevice/internal.h
+              libavdevice/opengl_enc_shaders.h
+              libavdevice/oss.h
+              libavdevice/pulse_audio_common.h
+              libavdevice/sndio.h
+              libavdevice/timefilter.h
+              libavdevice/v4l2-common.h
+              libavdevice/version.h
+              libavfilter/af_afir.h
+              libavfilter/af_anlmdndsp.h
+              libavfilter/af_volume.h
+              libavfilter/atadenoise.h
+              libavfilter/audio.h
+              libavfilter/avf_showcqt.h
+              libavfilter/avfilter.h
+              libavfilter/bbox.h
+              libavfilter/blend.h
+              libavfilter/blend_modes.c
+              libavfilter/boxblur.h
+              libavfilter/bufferqueue.h
+              libavfilter/buffersink.h
+              libavfilter/buffersrc.h
+              libavfilter/bwdif.h
+              libavfilter/colorspace.h
+              libavfilter/colorspacedsp.h
+              libavfilter/colorspacedsp_template.c
+              libavfilter/colorspacedsp_yuv2yuv_template.c
+              libavfilter/convolution.h
+              libavfilter/deshake.h
+              libavfilter/dnn/dnn_backend_common.h
+              libavfilter/dnn/dnn_backend_native.h
+              libavfilter/dnn/dnn_backend_native_layer_avgpool.h
+              libavfilter/dnn/dnn_backend_native_layer_conv2d.h
+              libavfilter/dnn/dnn_backend_native_layer_dense.h
+              libavfilter/dnn/dnn_backend_native_layer_depth2space.h
+              libavfilter/dnn/dnn_backend_native_layer_mathbinary.h
+              libavfilter/dnn/dnn_backend_native_layer_mathunary.h
+              libavfilter/dnn/dnn_backend_native_layer_maximum.h
+              libavfilter/dnn/dnn_backend_native_layer_pad.h
+              libavfilter/dnn/dnn_backend_native_layers.h
+              libavfilter/dnn/dnn_backend_openvino.h
+              libavfilter/dnn/dnn_backend_tf.h
+              libavfilter/dnn/dnn_io_proc.h
+              libavfilter/dnn/queue.h
+              libavfilter/dnn/safe_queue.h
+              libavfilter/dnn_filter_common.h
+              libavfilter/dnn_interface.h
+              libavfilter/drawutils.h
+              libavfilter/ebur128.h
+              libavfilter/filters.h
+              libavfilter/formats.h
+              libavfilter/framepool.h
+              libavfilter/framequeue.h
+              libavfilter/framerate.h
+              libavfilter/framesync.h
+              libavfilter/gblur.h
+              libavfilter/generate_wave_table.h
+              libavfilter/gradfun.h
+              libavfilter/hermite.h
+              libavfilter/hflip.h
+              libavfilter/internal.h
+              libavfilter/lavfutils.h
+              libavfilter/limiter.h
+              libavfilter/lswsutils.h
+              libavfilter/lut3d.h
+              libavfilter/maskedclamp.h
+              libavfilter/maskedmerge.h
+              libavfilter/median.h
+              libavfilter/median_template.c
+              libavfilter/motion_estimation.h
+              libavfilter/phase_template.c
+              libavfilter/preserve_color.h
+              libavfilter/psnr.h
+              libavfilter/qp_table.h
+              libavfilter/qsvvpp.h
+              libavfilter/removegrain.h
+              libavfilter/scale_eval.h
+              libavfilter/scene_sad.h
+              libavfilter/signature.h
+              libavfilter/signature_lookup.c
+              libavfilter/ssim.h
+              libavfilter/stereo3d.h
+              libavfilter/thread.h
+              libavfilter/threshold.h
+              libavfilter/tinterlace.h
+              libavfilter/transform.h
+              libavfilter/transpose.h
+              libavfilter/unsharp.h
+              libavfilter/v360.h
+              libavfilter/vaapi_vpp.h
+              libavfilter/version.h
+              libavfilter/vf_eq.h
+              libavfilter/vf_fspp.h
+              libavfilter/vf_hqdn3d.h
+              libavfilter/vf_idet.h
+              libavfilter/vf_nlmeans.h
+              libavfilter/vf_noise.h
+              libavfilter/vf_overlay.h
+              libavfilter/vf_pp7.h
+              libavfilter/vf_pullup.h
+              libavfilter/vf_scale_cuda.h
+              libavfilter/vf_spp.h
+              libavfilter/video.h
+              libavfilter/vidstabutils.h
+              libavfilter/vmaf_motion.h
+              libavfilter/vulkan.h
+              libavfilter/vulkan_filter.h
+              libavfilter/w3fdif.h
+              libavfilter/window_func.h
+              libavfilter/yadif.h
+              libavformat/aiff.h
+              libavformat/apetag.h
+              libavformat/argo_asf.h
+              libavformat/asf.h
+              libavformat/asfcrypt.h
+              libavformat/ast.h
+              libavformat/av1.h
+              libavformat/avc.h
+              libavformat/avformat.h
+              libavformat/avi.h
+              libavformat/avio.h
+              libavformat/avio_internal.h
+              libavformat/avlanguage.h
+              libavformat/caf.h
+              libavformat/dash.h
+              libavformat/dovi_isom.h
+              libavformat/dv.h
+              libavformat/ffmeta.h
+              libavformat/flac_picture.h
+              libavformat/flacenc.h
+              libavformat/flv.h
+              libavformat/gxf.h
+              libavformat/hevc.h
+              libavformat/hls_sample_encryption.h
+              libavformat/hlsplaylist.h
+              libavformat/http.h
+              libavformat/httpauth.h
+              libavformat/id3v1.h
+              libavformat/id3v2.h
+              libavformat/imf.h
+              libavformat/img2.h
+              libavformat/internal.h
+              libavformat/ip.h
+              libavformat/ircam.h
+              libavformat/isom.h
+              libavformat/lrc.h
+              libavformat/matroska.h
+              libavformat/metadata.h
+              libavformat/mms.h
+              libavformat/mov_chan.h
+              libavformat/movenc.h
+              libavformat/movenc_ttml.h
+              libavformat/movenccenc.h
+              libavformat/mpeg.h
+              libavformat/mpegts.h
+              libavformat/mxf.h
+              libavformat/network.h
+              libavformat/nut.h
+              libavformat/oggdec.h
+              libavformat/oma.h
+              libavformat/options_table.h
+              libavformat/os_support.h
+              libavformat/pcm.h
+              libavformat/qtpalette.h
+              libavformat/rawdec.h
+              libavformat/rawenc.h
+              libavformat/rdt.h
+              libavformat/replaygain.h
+              libavformat/riff.h
+              libavformat/rm.h
+              libavformat/rmsipr.h
+              libavformat/rso.h
+              libavformat/rtmp.h
+              libavformat/rtmpcrypt.h
+              libavformat/rtmppkt.h
+              libavformat/rtp.h
+              libavformat/rtpdec.h
+              libavformat/rtpdec_formats.h
+              libavformat/rtpenc.h
+              libavformat/rtpenc_chain.h
+              libavformat/rtpproto.h
+              libavformat/rtsp.h
+              libavformat/rtspcodes.h
+              libavformat/sauce.h
+              libavformat/smjpeg.h
+              libavformat/sox.h
+              libavformat/spdif.h
+              libavformat/srtp.h
+              libavformat/subtitles.h
+              libavformat/swf.h
+              libavformat/tee_common.h
+              libavformat/tls.h
+              libavformat/ttmlenc.h
+              libavformat/url.h
+              libavformat/urldecode.h
+              libavformat/version.h
+              libavformat/voc.h
+              libavformat/vorbiscomment.h
+              libavformat/vpcc.h
+              libavformat/w64.h
+              libavformat/wtv.h
+              libavformat/wv.h
+              libavformat/yuv4mpeg.h
+              libavutil/aarch64/cpu.h
+              libavutil/adler32.h
+              libavutil/aes.h
+              libavutil/aes_ctr.h
+              libavutil/aes_internal.h
+              libavutil/arm/intmath.h
+              libavutil/attributes.h
+              libavutil/audio_fifo.h
+              libavutil/avassert.h
+              libavutil/avstring.h
+              libavutil/avutil.h
+              libavutil/base64.h
+              libavutil/blowfish.h
+              libavutil/bprint.h
+              libavutil/bswap.h
+              libavutil/buffer.h
+              libavutil/buffer_internal.h
+              libavutil/camellia.h
+              libavutil/cast5.h
+              libavutil/channel_layout.h
+              libavutil/color_utils.h
+              libavutil/colorspace.h
+              libavutil/common.h
+              libavutil/cpu.h
+              libavutil/cpu_internal.h
+              libavutil/crc.h
+              libavutil/cuda_check.h
+              libavutil/des.h
+              libavutil/detection_bbox.h
+              libavutil/dict.h
+              libavutil/display.h
+              libavutil/dovi_meta.h
+              libavutil/downmix_info.h
+              libavutil/dynarray.h
+              libavutil/encryption_info.h
+              libavutil/error.h
+              libavutil/eval.h
+              libavutil/ffmath.h
+              libavutil/fifo.h
+              libavutil/file.h
+              libavutil/film_grain_params.h
+              libavutil/fixed_dsp.h
+              libavutil/float_dsp.h
+              libavutil/frame.h
+              libavutil/hash.h
+              libavutil/hdr_dynamic_metadata.h
+              libavutil/hmac.h
+              libavutil/hwcontext.h
+              libavutil/hwcontext_cuda.h
+              libavutil/hwcontext_cuda_internal.h
+              libavutil/hwcontext_d3d11va.h
+              libavutil/hwcontext_drm.h
+              libavutil/hwcontext_dxva2.h
+              libavutil/hwcontext_internal.h
+              libavutil/hwcontext_mediacodec.h
+              libavutil/hwcontext_opencl.h
+              libavutil/hwcontext_qsv.h
+              libavutil/hwcontext_vaapi.h
+              libavutil/hwcontext_vdpau.h
+              libavutil/hwcontext_videotoolbox.h
+              libavutil/hwcontext_vulkan.h
+              libavutil/imgutils.h
+              libavutil/imgutils_internal.h
+              libavutil/integer.h
+              libavutil/internal.h
+              libavutil/intfloat.h
+              libavutil/intmath.h
+              libavutil/intreadwrite.h
+              libavutil/lfg.h
+              libavutil/libm.h
+              libavutil/lls.h
+              libavutil/log.h
+              libavutil/lzo.h
+              libavutil/macos_kperf.h
+              libavutil/macros.h
+              libavutil/mastering_display_metadata.h
+              libavutil/mathematics.h
+              libavutil/md5.h
+              libavutil/mem.h
+              libavutil/mem_internal.h
+              libavutil/motion_vector.h
+              libavutil/murmur3.h
+              libavutil/objc.h
+              libavutil/opt.h
+              libavutil/parseutils.h
+              libavutil/pca.h
+              libavutil/pixdesc.h
+              libavutil/pixelutils.h
+              libavutil/pixfmt.h
+              libavutil/ppc/cpu.h
+              libavutil/ppc/util_altivec.h
+              libavutil/qsort.h
+              libavutil/random_seed.h
+              libavutil/rational.h
+              libavutil/rc4.h
+              libavutil/replaygain.h
+              libavutil/reverse.h
+              libavutil/ripemd.h
+              libavutil/samplefmt.h
+              libavutil/sha.h
+              libavutil/sha512.h
+              libavutil/slicethread.h
+              libavutil/softfloat.h
+              libavutil/softfloat_ieee754.h
+              libavutil/softfloat_tables.h
+              libavutil/spherical.h
+              libavutil/stereo3d.h
+              libavutil/tablegen.h
+              libavutil/tea.h
+              libavutil/thread.h
+              libavutil/threadmessage.h
+              libavutil/time.h
+              libavutil/time_internal.h
+              libavutil/timecode.h
+              libavutil/timer.h
+              libavutil/timestamp.h
+              libavutil/tree.h
+              libavutil/twofish.h
+              libavutil/tx.h
+              libavutil/tx_priv.h
+              libavutil/tx_template.c
+              libavutil/version.h
+              libavutil/video_enc_params.h
+              libavutil/vulkan.h
+              libavutil/vulkan_functions.h
+              libavutil/vulkan_loader.h
+              libavutil/wchar_filename.h
+              libavutil/aarch64/timer.h
+              libavutil/arm/timer.h
+              libavutil/bfin/timer.h
+              libavutil/ppc/timer.h
+              libavutil/x86/asm.h
+              libavutil/x86/bswap.h
+              libavutil/x86/cpu.h
+              libavutil/x86/emms.h
+              libavutil/x86/intmath.h
+              libavutil/x86/intreadwrite.h
+              libavutil/x86/pixelutils.h
+              libavutil/x86/timer.h
+              libavutil/xga_font_data.h
+              libavutil/xtea.h
+              libavutil/ppc/cpu.c
+              libavutil/ppc/float_dsp_altivec.c
+              libavutil/ppc/float_dsp_init.c
+              libavutil/ppc/float_dsp_vsx.c
+              libpostproc/postprocess.h
+              libpostproc/postprocess_internal.h
+              libpostproc/postprocess_template.c
+              libpostproc/version.h
+              libswresample/audioconvert.h
+              libswresample/dither_template.c
+              libswresample/noise_shaping_data.c
+              libswresample/rematrix_template.c
+              libswresample/resample.h
+              libswresample/resample_template.c
+              libswresample/swresample.h
+              libswresample/swresample_internal.h
+              libswresample/version.h
+              libswscale/bayer_template.c
+              libswscale/rgb2rgb.h
+              libswscale/rgb2rgb_template.c
+              libswscale/swscale.h
+              libswscale/swscale_internal.h
+              libswscale/version.h
+              libswscale/ppc/swscale_altivec.c
+              libswscale/ppc/swscale_ppc_template.c
+              libswscale/ppc/swscale_vsx.c
+              libswscale/ppc/yuv2rgb_altivec.c
+              libswscale/ppc/yuv2yuv_altivec.c
+              libswscale/x86/rgb2rgb_template.c
+              libswscale/x86/swscale_template.c
+              libswscale/x86/yuv2rgb_template.c
+              tools/decode_simple.h)
+
+preset_files=(presets/libvpx-360p.ffpreset
+              presets/libvpx-720p50_60.ffpreset
+              presets/libvpx-1080p50_60.ffpreset
+              presets/libvpx-720p.ffpreset
+              presets/libvpx-1080p.ffpreset)
+
+asm_files=(libavcodec/x86/huffyuvdsp_template.asm
+           libavcodec/x86/simple_idct10_template.asm
+           libavcodec/x86/vp9itxfm_template.asm
+           libavutil/x86/x86util.asm
+           libavutil/x86/x86inc.asm)
+
+asm_files2="$(grep "^gcc.*\.c$" "${build_log}" | awk 'NF>1{print $NF}' | sort)"
+c_files="$(grep "^nasm.*\.asm$" "${build_log}" | awk 'NF>1{print $NF}' | sort)"
+
+# shellcheck disable=2206
+keepfiles=(${other_files[@]}
+           ${doc_files[@]}
+           ${build_files[@]}
+           ${make_files[@]}
+           ${test_files[@]}
+           ${header_files[@]}
+           ${version_scripts[@]}
+           ${preset_files[@]}
+           ${asm_files[@]}
+           ${asm_files2}
+           ${c_files})
+
+pushd "${FF_PATH}" || cleanup_and_exit 1
+
+echo
+echo ">>> Cleaning up sources for new tarball ..."
+
+# Get file list from ffmpeg
+mapfile -d '' filelist < <(find ./ -type f -printf '%P\0')
+
+# Sort arrays
+readarray -t keepfiles_sorted < <(printf '%s\0' "${keepfiles[@]}" | sort -z | xargs -0n1)
+readarray -t filelist_sorted < <(printf '%s\0' "${filelist[@]}" | sort -z | xargs -0n1)
+
+# Compare arrays and remove files which are left over
+comm -2 -3 -z <(printf '%s\0' "${filelist_sorted[@]}") <(printf '%s\0' "${keepfiles_sorted[@]}") | xargs -0 rm -f
+
+readarray -t removed_files < <(comm -1 -3 -z <(printf '%s\0' "${filelist_sorted[@]}") <(printf '%s\0' "${keepfiles_sorted[@]}") | xargs -0n1)
+if [[ "${#removed_files[@]}" -ge 1 ]]; then
+    if [[ "${#removed_files[@]}" -eq 1 ]] && [[ -z "${removed_files[0]}" ]]; then
+        echo "... done"
+    else
+        echo "File not in sources anymore (please cleanup keepfiles):"
+        for f in "${removed_files[@]}"; do
+            if [[ -z "${f}" ]]; then
+                continue
+            fi
+            echo "  * ${f}"
+        done
+    fi
+fi
+echo
+
+popd || cleanup_and_exit 1 # /FF_PATH
+
+pushd "${FF_TMPDIR}" || cleanup_and_exit 1
+
+echo ">>> Create new tarball ${FF_PKGNAME}${FF_PKGNAME_SUFFIX}-${FF_VERSION}.tar.xz ..."
+tar -cJf "${FF_PKG_DIR}/${FF_PKGNAME}${FF_PKGNAME_SUFFIX}-${FF_VERSION}.tar.xz" "${FF_PKGNAME}-${FF_VERSION}"
+if [ $? -ne 0 ]; then
+    echo "ERROR: Creating tarball failed"
+    cleanup_and_exit 1
+fi
+
+popd || cleanup_and_exit 1 # /FF_TMPDIR
+
+du -sh "${FF_PKGNAME}${FF_PKGNAME_SUFFIX}-${FF_VERSION}.tar.xz"
+echo
+
+cleanup_and_exit 0
