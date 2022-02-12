@@ -651,7 +651,7 @@ cat config.h
 # Paranoia check
 %if %{without all_codecs}
 # DECODER
-for i in MPEG4 H263 H264 HEVC HEVC_QSV HEVC_RKMPP VC1; do
+for i in MPEG4 H263 H264 HEVC HEVC_RKMPP VC1; do
     grep -q "#define CONFIG_${i}_DECODER 0" config.h
 done
 
