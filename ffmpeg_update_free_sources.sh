@@ -17,6 +17,8 @@
 #
 # shellcheck disable=2181
 
+export LC_COLLATE="C.UTF-8"
+
 cleanup_and_exit()
 {
     if test "$1" = 0 -o -z "$1"; then

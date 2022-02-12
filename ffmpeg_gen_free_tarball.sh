@@ -17,6 +17,8 @@
 #
 # shellcheck disable=2181
 
+export LC_COLLATE="C.UTF-8"
+
 FF_PKGNAME="ffmpeg"
 FF_PKGNAME_SUFFIX="-free"
 FF_VERSION="$(rpmspec -P ./*.spec | grep ^Version | sed -e 's/Version:[ ]*//g')"
