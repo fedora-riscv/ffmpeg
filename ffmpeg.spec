@@ -8,7 +8,7 @@
 %global pkg_suffix -free
 
 # Fails due to asm issue
-%ifarch %{ix86} %arm
+%ifarch %{ix86} %{arm}
 %bcond_with lto
 %else
 %bcond_without lto
@@ -46,6 +46,10 @@
 %bcond_with x264
 %bcond_with x265
 %bcond_with xvid
+%endif
+
+%if %{without lto}
+%global _lto_cflags %{nil}
 %endif
 
 %global av_codec_soversion 59
