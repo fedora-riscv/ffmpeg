@@ -17,28 +17,8 @@
 #
 # shellcheck disable=2181
 
-FF_PKGNAME="ffmpeg"
-FF_PKGNAME_SUFFIX="-free"
-FF_VERSION="$(rpmspec -P ./*.spec | grep ^Version | sed -e 's/Version:[ ]*//g')"
-FF_TARBALL_URL="https://ffmpeg.org/releases/${FF_PKGNAME}-${FF_VERSION}.tar.xz"
-FF_TARBALL="$(basename "${FF_TARBALL_URL}")"
-FF_GPG_ARMOR_FILE="${FF_TARBALL}.asc"
-FF_PKG_DIR="$(pwd)"
-FF_KEYRING="${FF_PKG_DIR}/ffmpeg.keyring"
-FF_TMPDIR=$(mktemp --tmpdir -d ffmpeg-XXXXXXXX)
-FF_PATH="${FF_TMPDIR}/${FF_PKGNAME}-${FF_VERSION}"
-
-cleanup_tmpdir() {
-    # shellcheck disable=2164
-    popd 2>/dev/null
-    rm -rf "${FF_TMPDIR}"
-}
-trap cleanup_tmpdir SIGINT
-
 cleanup_and_exit()
 {
-    cleanup_tmpdir
-
     if test "$1" = 0 -o -z "$1"; then
         exit 0
     else
@@ -46,17 +26,6 @@ cleanup_and_exit()
         exit ${1}
     fi
 }
-
-function usage()
-{
-    echo "Usage: $(basename "${0}") BUILD_LOG"
-    cleanup_and_exit 0
-}
-
-if [[ $# -lt 1 ]]; then
-    usage
-    cleanup_and_exit 0
-fi
 
 echo ">>> Collect information from ${1}"
 build_log="$(readlink -f "${1}")"
