@@ -74,7 +74,7 @@ Source1:        https://ffmpeg.org/releases/ffmpeg-%{version}.tar.xz.asc
 # https://ffmpeg.org/ffmpeg-devel.asc
 # gpg2 --import --import-options import-export,import-minimal ffmpeg-devel.asc > ./ffmpeg.keyring
 Source2:        ffmpeg.keyring
-Source3:        ffmpeg_clean_sources.sh
+Source3:        ffmpeg_free_sources
 Source20:       enable_decoders
 Source21:       enable_encoders
 # Change path from /usr/local to /usr
