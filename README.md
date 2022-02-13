@@ -14,6 +14,8 @@ community or a corporation.
 4. Do a full build locally: `fedpkg mockbuild --with full_build`
 5. Run `./ffmpeg_update_free_sources.sh results_ffmpeg/5.0/0.fc35/build.log`
    This will update the `ffmpeg_free_sources` file list.
+   Note that header files will need to be manually added
+   to the `ffmpeg_free_sources` file list.
 6. Run `./ffmpeg_gen_free_tarball.sh` to create the tarball.
 7. Set `pkg_suffix` to `-free` again
 8. Set the `Release` to 1 in the spec file.
