@@ -224,6 +224,9 @@ libavcodec/adx.h
 libavcodec/adx_parser.c
 libavcodec/allcodecs.c
 libavcodec/alpha/Makefile
+libavcodec/amfenc.c
+libavcodec/amfenc_h264.c
+libavcodec/amfenc_hevc.c
 libavcodec/amr_parser.c
 libavcodec/ansi.c
 libavcodec/apng.h
@@ -829,6 +832,9 @@ libavcodec/nvdec_mjpeg.c
 libavcodec/nvdec_mpeg12.c
 libavcodec/nvdec_vp8.c
 libavcodec/nvdec_vp9.c
+libavcodec/nvenc.c
+libavcodec/nvenc_h264.c
+libavcodec/nvenc_hevc.c
 libavcodec/options.c
 libavcodec/options_table.h
 libavcodec/opus.c
@@ -1032,6 +1038,7 @@ libavcodec/vaapi_decode.h
 libavcodec/vaapi_encode.c
 libavcodec/vaapi_encode.h
 libavcodec/vaapi_encode_h264.c
+libavcodec/vaapi_encode_h265.c
 libavcodec/vaapi_hevc.h
 libavcodec/vaapi_mjpeg.c
 libavcodec/vaapi_mpeg2.c

@@ -65,7 +65,7 @@ Name:           ffmpeg
 %global pkg_name %{name}%{?pkg_suffix}
 
 Version:        5.0
-Release:        1%{?dist}
+Release:        2%{?dist}
 Summary:        A complete solution to record, convert and stream audio and video
 License:        GPLv3+
 URL:            https://ffmpeg.org/
@@ -103,6 +103,7 @@ Requires:       libpostproc%{?pkg_suffix}%{_isa} = %{version}-%{release}
 Requires:       libswresample%{?pkg_suffix}%{_isa} = %{version}-%{release}
 Requires:       libswscale%{?pkg_suffix}%{_isa} = %{version}-%{release}
 
+BuildRequires:  AMF-devel
 BuildRequires:  fdk-aac-free-devel
 BuildRequires:  flite-devel
 BuildRequires:  game-music-emu-devel
@@ -660,7 +661,7 @@ for i in MPEG4 H263 H263P LIBX264 LIBX264RGB LIBX265 LIBXVID; do
     grep -q "#define CONFIG_${i}_ENCODER 0" config.h
 done
 for i in H264 HEVC; do
-    for j in AMF MF NVENC VIDEOTOOLBOX; do
+    for j in MF VIDEOTOOLBOX; do
         grep -q "#define CONFIG_${i}_${j}_ENCODER 0" config.h
     done
 done
@@ -799,5 +800,8 @@ rm -rf %{buildroot}%{_datadir}/%{name}/examples
 %{_mandir}/man3/libswscale.3*
 
 %changelog
+* Sun Feb 13 2022 Neal Gompa <ngompa@fedoraproject.org> - 5.0-2
+- Enable support for more hardware codecs
+
 * Fri Feb 11 2022 Andreas Schneider <asn@redhat.com> - 5.0-1
 - Initial import (fedora#2051008)

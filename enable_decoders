@@ -14,8 +14,14 @@ ffwavesynth # pseudo
 flac # libFLAC
 gif # libpng
 gsm # libgsm
+h264_nvdec # hardware
+h264_vdpau # hardware
+h264_vaapi # hardware
 h264_v4l2m2m # hardware
 h264_qsv # hardware
+hevc_nvdec # hardware
+hevc_vdpau # hardware
+hevc_vaapi # hardware
 hevc_qsv # hardware
 huffyuv # trivial+zlib
 ilbc # ilbc
