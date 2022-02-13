@@ -944,6 +944,9 @@ libavcodec/qsvenc.c
 libavcodec/qsvenc.h
 libavcodec/qsvenc_h264.c
 libavcodec/qsvenc_hevc.c
+libavcodec/qsvenc_jpeg.c
+libavcodec/qsvenc_mpeg2.c
+libavcodec/qsvenc_vp9.c
 libavcodec/rangecoder.c
 libavcodec/rangecoder.h
 libavcodec/ratecontrol.c

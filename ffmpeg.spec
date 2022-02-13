@@ -65,7 +65,7 @@ Name:           ffmpeg
 %global pkg_name %{name}%{?pkg_suffix}
 
 Version:        5.0
-Release:        2%{?dist}
+Release:        3%{?dist}
 Summary:        A complete solution to record, convert and stream audio and video
 License:        GPLv3+
 URL:            https://ffmpeg.org/
@@ -800,6 +800,9 @@ rm -rf %{buildroot}%{_datadir}/%{name}/examples
 %{_mandir}/man3/libswscale.3*
 
 %changelog
+* Sun Feb 13 2022 Neal Gompa <ngompa@fedoraproject.org> - 5.0-3
+- Enable more QSV and V4L2M2M codecs
+
 * Sun Feb 13 2022 Neal Gompa <ngompa@fedoraproject.org> - 5.0-2
 - Enable support for more hardware codecs
 

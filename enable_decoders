@@ -4,6 +4,7 @@ ac3
 ansi # trivial
 apng # animated png
 ass # trivial
+av1_qsv # libaom
 ayuv # trivial
 bmp # trivial
 dirac # dirac
@@ -14,6 +15,7 @@ ffwavesynth # pseudo
 flac # libFLAC
 gif # libpng
 gsm # libgsm
+h263_v4l2m2m # hardware
 h264_nvdec # hardware
 h264_vdpau # hardware
 h264_vaapi # hardware
@@ -22,6 +24,7 @@ h264_qsv # hardware
 hevc_nvdec # hardware
 hevc_vdpau # hardware
 hevc_vaapi # hardware
+hevc_v4l2m2m # hardware
 hevc_qsv # hardware
 huffyuv # trivial+zlib
 ilbc # ilbc
@@ -40,6 +43,7 @@ libvorbis # libvorbis
 libvpx_vp8 # libvpx
 libvpx_vp9 # libvpx
 mjpeg # mjpegtools
+mjpeg_qsv # mjpegtools
 mp1 # twolame/lame
 mp1float # twolame/lame
 mp2 # twolame
@@ -47,7 +51,11 @@ mp2float # twolame
 mp3 # lame
 mp3float # lame
 mpeg1video
+mpeg1_v4l2m2m
 mpeg2video
+mpeg2_qsv
+mpeg2_v4l2m2m
+mpeg4_v4l2m2m # hardware
 opus # libopus
 pam # trivial
 pbm # trivial
@@ -99,6 +107,8 @@ v210x # trivial
 v308 # trivial
 v408 # trivial
 v410 # trivial
+vc1_qsv # hardware
+vc1_v4l2m2m # hardware
 vorbis # libvorbis
 vp3 # libav
 vp5 # libav
@@ -106,7 +116,11 @@ vp6 # libav
 vp6a # libav
 vp6f # libav
 vp8 # libvpx
+vp8_qsv # libvpx
+vp8_v4l2m2m # libvpx
 vp9 # libvpx
+vp9_qsv # libvpx
+vp9_v4l2m2m # libvpx
 webp # libwebp
 webvtt # trivial
 wrapped_avframe # passthrough

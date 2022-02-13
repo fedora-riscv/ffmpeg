@@ -9,6 +9,7 @@ ffv1
 ffvhuff # trivial+zlib
 flac # libFLAC
 gif # libpng
+h263_v4l2m2m # hardware
 h264_amf # hardware
 h264_nvenc # hardware
 h264_qsv # hardware
@@ -41,10 +42,13 @@ libvpx_vp9 # libvpx
 libwebp # libwebp
 libwebp_anim # libwebp
 mjpeg # mjpegtools
+mjpeg_qsv # mjpegtools
 mp2 # twolame
 mp2fixed # twolame
 mpeg1video
 mpeg2video
+mpeg2_qsv
+mpeg4_v4l2m2m # hardware
 opus # opus
 pam
 pbm # trivial
@@ -90,7 +94,12 @@ v210 # trivial
 v308 # trivial
 v408 # trivial
 v410 # trivial
+vc1_qsv # hardware
+vc1_v4l2m2m # hardware
 vorbis # libvorbis
+vp8_qsv # libvpx
+vp8_v4l2m2m # libvpx
+vp9_qsv # libvpx
 webvtt # trivial
 wrapped_avframe # passthrough
 xbm # (X11)
