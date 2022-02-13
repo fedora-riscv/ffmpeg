@@ -1,4 +1,4 @@
-# FFMEPG
+# FFMPEG
 
 FFmpeg is a multimedia framework, able to decode, encode, transcode, mux,
 demux, stream, filter and play pretty much anything that humans and machines
