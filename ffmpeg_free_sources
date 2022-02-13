@@ -225,6 +225,7 @@ libavcodec/adx_parser.c
 libavcodec/allcodecs.c
 libavcodec/alpha/Makefile
 libavcodec/amfenc.c
+libavcodec/amfenc.h
 libavcodec/amfenc_h264.c
 libavcodec/amfenc_hevc.c
 libavcodec/amr_parser.c
@@ -833,6 +834,7 @@ libavcodec/nvdec_mpeg12.c
 libavcodec/nvdec_vp8.c
 libavcodec/nvdec_vp9.c
 libavcodec/nvenc.c
+libavcodec/nvenc.h
 libavcodec/nvenc_h264.c
 libavcodec/nvenc_hevc.c
 libavcodec/options.c
