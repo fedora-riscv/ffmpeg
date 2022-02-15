@@ -305,6 +305,8 @@ Summary:        FFmpeg codec library
 Requires:       libavutil%{?pkg_suffix}%{_isa} = %{version}-%{release}
 Requires:       libswresample%{?pkg_suffix}%{_isa} = %{version}-%{release}
 # We dlopen() openh264, so weak-depend on it...
+## Note, we can do this because openh264 is provided in a default-enabled
+## third party repository provided by Cisco.
 Recommends:     libopenh264.so.6%{?lib64_suffix}
 
 %description -n libavcodec%{?pkg_suffix}
