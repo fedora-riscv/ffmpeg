@@ -28,6 +28,7 @@ libaom_av1 # libaom
 libcodec2 # codec2
 libgsm # libgsm
 libmp3lame # lame
+libopenh264 # openh264_dlopen
 libopenjpeg # openjpeg
 libopus # opus
 librav1e # rav1e

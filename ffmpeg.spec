@@ -52,6 +52,10 @@
 %global _lto_cflags %{nil}
 %endif
 
+%if "%{__isa_bits}" == "64"
+%global lib64_suffix ()(64bit)
+%endif
+
 %global av_codec_soversion 59
 %global av_device_soversion 59
 %global av_filter_soversion 8
@@ -65,18 +69,24 @@ Name:           ffmpeg
 %global pkg_name %{name}%{?pkg_suffix}
 
 Version:        5.0
-Release:        3%{?dist}
+Release:        4%{?dist}
 Summary:        A complete solution to record, convert and stream audio and video
 License:        GPLv3+
 URL:            https://ffmpeg.org/
 Source0:        ffmpeg%{?pkg_suffix}-%{version}.tar.xz
-Source1:        https://ffmpeg.org/releases/ffmpeg-%{version}.tar.xz.asc
+Source1:        ffmpeg-dlopen-headers.tar.xz
+Source2:        https://ffmpeg.org/releases/ffmpeg-%{version}.tar.xz.asc
 # https://ffmpeg.org/ffmpeg-devel.asc
 # gpg2 --import --import-options import-export,import-minimal ffmpeg-devel.asc > ./ffmpeg.keyring
-Source2:        ffmpeg.keyring
-Source3:        ffmpeg_free_sources
+Source3:        ffmpeg.keyring
+Source4:        ffmpeg_free_sources
 Source20:       enable_decoders
 Source21:       enable_encoders
+# Scripts for generating tarballs
+Source90:       ffmpeg_update_free_sources.sh
+Source91:       ffmpeg_gen_free_tarball.sh
+Source92:       ffmpeg_get_dlopen_headers.sh
+
 # Change path from /usr/local to /usr
 Patch1:         fix-vmaf-model-path.patch
 # Some header cleanup
@@ -93,6 +103,9 @@ Patch5:         ffmpeg-allow-fdk-aac-free.patch
 Patch6:         ffmpeg-fix-gnutls-priority.patch
 # https://ffmpeg.org/pipermail/ffmpeg-devel/2021-September/285401.html
 Patch7:         ffmpeg-support-chromium.patch
+
+# Set up dlopen for openh264
+Patch1001:      ffmpeg-dlopen-openh264.patch
 
 Requires:       libavcodec%{?pkg_suffix}%{_isa} = %{version}-%{release}
 Requires:       libavdevice%{?pkg_suffix}%{_isa} = %{version}-%{release}
@@ -291,6 +304,8 @@ break compatibility without any notice.
 Summary:        FFmpeg codec library
 Requires:       libavutil%{?pkg_suffix}%{_isa} = %{version}-%{release}
 Requires:       libswresample%{?pkg_suffix}%{_isa} = %{version}-%{release}
+# We dlopen() openh264, so weak-depend on it...
+Recommends:     libopenh264.so.6%{?lib64_suffix}
 
 %description -n libavcodec%{?pkg_suffix}
 The libavcodec library provides a generic encoding/decoding framework
@@ -497,10 +512,10 @@ This subpackage contains the headers for FFmpeg libswscale.
 
 %prep
 %if %{with upstream_tarball}
-gpgv2 --quiet --keyring %{SOURCE2} %{SOURCE1} %{SOURCE0}
+gpgv2 --quiet --keyring %{SOURCE3} %{SOURCE2} %{SOURCE0}
 %endif
 
-%autosetup -p1
+%autosetup -a1 -p1
 install -m 0644 %{SOURCE20} enable_decoders
 install -m 0644 %{SOURCE21} enable_encoders
 # fix -O3 -g in host_cflags
@@ -556,6 +571,7 @@ cp -a doc/examples/{*.c,Makefile,README} _doc/examples/
     --enable-libjack \
     --enable-libmp3lame \
     --enable-libmysofa \
+    --enable-libopenh264-dlopen \
     --enable-libopenjpeg \
     --enable-libopenmpt \
     --enable-libopus \
@@ -800,6 +816,10 @@ rm -rf %{buildroot}%{_datadir}/%{name}/examples
 %{_mandir}/man3/libswscale.3*
 
 %changelog
+* Tue Feb 15 2022 Neal Gompa <ngompa@fedoraproject.org> - 5.0-4
+- Add support for dlopening OpenH264
+- Add tarball scripts as sources
+
 * Sun Feb 13 2022 Neal Gompa <ngompa@fedoraproject.org> - 5.0-3
 - Enable more QSV and V4L2M2M codecs
 
