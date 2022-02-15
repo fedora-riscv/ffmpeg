@@ -15,17 +15,6 @@ ffwavesynth # pseudo
 flac # libFLAC
 gif # libpng
 gsm # libgsm
-h263_v4l2m2m # hardware
-h264_nvdec # hardware
-h264_vdpau # hardware
-h264_vaapi # hardware
-h264_v4l2m2m # hardware
-h264_qsv # hardware
-hevc_nvdec # hardware
-hevc_vdpau # hardware
-hevc_vaapi # hardware
-hevc_v4l2m2m # hardware
-hevc_qsv # hardware
 huffyuv # trivial+zlib
 ilbc # ilbc
 jpeg2000 # openjpeg2
@@ -56,7 +45,6 @@ mpeg1_v4l2m2m
 mpeg2video
 mpeg2_qsv
 mpeg2_v4l2m2m
-mpeg4_v4l2m2m # hardware
 opus # libopus
 pam # trivial
 pbm # trivial
@@ -108,8 +96,6 @@ v210x # trivial
 v308 # trivial
 v408 # trivial
 v410 # trivial
-vc1_qsv # hardware
-vc1_v4l2m2m # hardware
 vorbis # libvorbis
 vp3 # libav
 vp5 # libav

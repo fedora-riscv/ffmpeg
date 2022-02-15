@@ -69,7 +69,7 @@ Name:           ffmpeg
 %global pkg_name %{name}%{?pkg_suffix}
 
 Version:        5.0
-Release:        4%{?dist}
+Release:        5%{?dist}
 Summary:        A complete solution to record, convert and stream audio and video
 License:        GPLv3+
 URL:            https://ffmpeg.org/
@@ -818,6 +818,9 @@ rm -rf %{buildroot}%{_datadir}/%{name}/examples
 %{_mandir}/man3/libswscale.3*
 
 %changelog
+* Tue Feb 15 2022 Neal Gompa <ngompa@fedoraproject.org> - 5.0-5
+- Disable hardware decoders due to broken failure modes
+
 * Tue Feb 15 2022 Neal Gompa <ngompa@fedoraproject.org> - 5.0-4
 - Add support for dlopening OpenH264
 - Add tarball scripts as sources
