@@ -1,6 +1,6 @@
-From 23c6bb2850b82c473e67df111333479805b0ba4b Mon Sep 17 00:00:00 2001
+From 6cd7b3f91c45176b48c1138a3534cf7b63010952 Mon Sep 17 00:00:00 2001
 From: Neal Gompa <ngompa@fedoraproject.org>
-Date: Tue, 15 Feb 2022 10:29:05 -0500
+Date: Thu, 17 Feb 2022 07:44:32 -0500
 Subject: [PATCH] avcodec/openh264: Add the ability to dlopen() OpenH264
 
 We can't directly depend on OpenH264, but we can weakly link to it
@@ -48,7 +48,7 @@ index 6b5ef6332e..f08e566e98 100755
                                 { require_pkg_config libopenjpeg "libopenjp2 >= 2.1.0" openjpeg.h opj_version -DOPJ_STATIC && add_cppflags -DOPJ_STATIC; } }
  enabled libopenmpt        && require_pkg_config libopenmpt "libopenmpt >= 0.2.6557" libopenmpt/libopenmpt.h openmpt_module_create -lstdc++ && append libopenmpt_extralibs "-lstdc++"
 diff --git a/libavcodec/libopenh264.c b/libavcodec/libopenh264.c
-index 59c61a3a4c..382a34562a 100644
+index 59c61a3a4c..1dcf8e17d0 100644
 --- a/libavcodec/libopenh264.c
 +++ b/libavcodec/libopenh264.c
 @@ -20,8 +20,13 @@
@@ -72,7 +72,7 @@ index 59c61a3a4c..382a34562a 100644
 +
 +#ifdef CONFIG_LIBOPENH264_DLOPEN
 +    if (loadLibOpenH264(logctx))
-+         return -1;
++         return AVERROR_EXTERNAL;
 +#endif
 +
      OpenH264Version libver = WelsGetCodecVersion();
@@ -249,7 +249,7 @@ index 0000000000..c58fcd704d
 +
 +#endif // CONFIG_LIBOPENH264_DLOPEN
 diff --git a/libavcodec/libopenh264dec.c b/libavcodec/libopenh264dec.c
-index 7f5e85402a..281e43c3c0 100644
+index 7f5e85402a..34b238519e 100644
 --- a/libavcodec/libopenh264dec.c
 +++ b/libavcodec/libopenh264dec.c
 @@ -19,8 +19,12 @@
@@ -271,14 +271,14 @@ index 7f5e85402a..281e43c3c0 100644
  
 +#ifdef CONFIG_LIBOPENH264_DLOPEN
 +    if (loadLibOpenH264(avctx))
-+         return -1;
++         return AVERROR_DECODER_NOT_FOUND;
 +#endif
 +
      if ((err = ff_libopenh264_check_version(avctx)) < 0)
          return err;
  
 diff --git a/libavcodec/libopenh264enc.c b/libavcodec/libopenh264enc.c
-index de4b85c411..555351982e 100644
+index de4b85c411..644458a5bb 100644
 --- a/libavcodec/libopenh264enc.c
 +++ b/libavcodec/libopenh264enc.c
 @@ -19,8 +19,12 @@
@@ -300,7 +300,7 @@ index de4b85c411..555351982e 100644
  
 +#ifdef CONFIG_LIBOPENH264_DLOPEN
 +    if (loadLibOpenH264(avctx))
-+         return -1;
++         return AVERROR_ENCODER_NOT_FOUND;
 +#endif
 +
      if ((err = ff_libopenh264_check_version(avctx)) < 0)
