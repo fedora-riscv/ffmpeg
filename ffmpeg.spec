@@ -69,7 +69,7 @@ Name:           ffmpeg
 %global pkg_name %{name}%{?pkg_suffix}
 
 Version:        5.0
-Release:        6%{?dist}
+Release:        7%{?dist}
 Summary:        A complete solution to record, convert and stream audio and video
 License:        GPLv3+
 URL:            https://ffmpeg.org/
@@ -818,6 +818,9 @@ rm -rf %{buildroot}%{_datadir}/%{name}/examples
 %{_mandir}/man3/libswscale.3*
 
 %changelog
+* Fri Feb 18 2022 Neal Gompa <ngompa@fedoraproject.org> - 5.0-7
+- Update OpenH264 dlopen patch to split dlopen code into c and h files
+
 * Thu Feb 17 2022 Neal Gompa <ngompa@fedoraproject.org> - 5.0-6
 - Update OpenH264 dlopen patch to use AVERROR return codes correctly
 

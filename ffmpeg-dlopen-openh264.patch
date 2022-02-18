@@ -1,6 +1,6 @@
-From 6cd7b3f91c45176b48c1138a3534cf7b63010952 Mon Sep 17 00:00:00 2001
+From e831c68c93ed2d155178aa89b06901558298ce30 Mon Sep 17 00:00:00 2001
 From: Neal Gompa <ngompa@fedoraproject.org>
-Date: Thu, 17 Feb 2022 07:44:32 -0500
+Date: Fri, 18 Feb 2022 07:42:05 -0500
 Subject: [PATCH] avcodec/openh264: Add the ability to dlopen() OpenH264
 
 We can't directly depend on OpenH264, but we can weakly link to it
@@ -9,14 +9,18 @@ and gracefully expose the capability.
 Co-authored-by: Andreas Schneider <asn@cryptomilk.org>
 Co-authored-by: Neal Gompa <ngompa@fedoraproject.org>
 
+Signed-off-by: Andreas Schneider <asn@cryptomilk.org>
 Signed-off-by: Neal Gompa <ngompa@fedoraproject.org>
 ---
  configure                       |   3 +
- libavcodec/libopenh264.c        |  11 +++
- libavcodec/libopenh264_dlopen.h | 164 ++++++++++++++++++++++++++++++++
+ libavcodec/Makefile             |   1 +
+ libavcodec/libopenh264.c        |  15 +++-
+ libavcodec/libopenh264_dlopen.c | 147 ++++++++++++++++++++++++++++++++
+ libavcodec/libopenh264_dlopen.h |  58 +++++++++++++
  libavcodec/libopenh264dec.c     |   9 ++
  libavcodec/libopenh264enc.c     |   9 ++
- 5 files changed, 196 insertions(+)
+ 7 files changed, 241 insertions(+), 1 deletion(-)
+ create mode 100644 libavcodec/libopenh264_dlopen.c
  create mode 100644 libavcodec/libopenh264_dlopen.h
 
 diff --git a/configure b/configure
@@ -47,8 +51,20 @@ index 6b5ef6332e..f08e566e98 100755
  enabled libopenjpeg       && { check_pkg_config libopenjpeg "libopenjp2 >= 2.1.0" openjpeg.h opj_version ||
                                 { require_pkg_config libopenjpeg "libopenjp2 >= 2.1.0" openjpeg.h opj_version -DOPJ_STATIC && add_cppflags -DOPJ_STATIC; } }
  enabled libopenmpt        && require_pkg_config libopenmpt "libopenmpt >= 0.2.6557" libopenmpt/libopenmpt.h openmpt_module_create -lstdc++ && append libopenmpt_extralibs "-lstdc++"
+diff --git a/libavcodec/Makefile b/libavcodec/Makefile
+index 3adf1536d8..9dc8389ce2 100644
+--- a/libavcodec/Makefile
++++ b/libavcodec/Makefile
+@@ -1058,6 +1058,7 @@ OBJS-$(CONFIG_LIBMP3LAME_ENCODER)         += libmp3lame.o
+ OBJS-$(CONFIG_LIBOPENCORE_AMRNB_DECODER)  += libopencore-amr.o
+ OBJS-$(CONFIG_LIBOPENCORE_AMRNB_ENCODER)  += libopencore-amr.o
+ OBJS-$(CONFIG_LIBOPENCORE_AMRWB_DECODER)  += libopencore-amr.o
++OBJS-$(CONFIG_LIBOPENH264_DLOPEN)         += libopenh264_dlopen.o
+ OBJS-$(CONFIG_LIBOPENH264_DECODER)        += libopenh264dec.o libopenh264.o
+ OBJS-$(CONFIG_LIBOPENH264_ENCODER)        += libopenh264enc.o libopenh264.o
+ OBJS-$(CONFIG_LIBOPENJPEG_DECODER)        += libopenjpegdec.o
 diff --git a/libavcodec/libopenh264.c b/libavcodec/libopenh264.c
-index 59c61a3a4c..1dcf8e17d0 100644
+index 59c61a3a4c..9b7dfc59be 100644
 --- a/libavcodec/libopenh264.c
 +++ b/libavcodec/libopenh264.c
 @@ -20,8 +20,13 @@
@@ -65,67 +81,55 @@ index 59c61a3a4c..1dcf8e17d0 100644
  
  #include "libavutil/log.h"
  
-@@ -52,6 +57,12 @@ int ff_libopenh264_check_version(void *logctx)
+@@ -52,7 +57,15 @@ int ff_libopenh264_check_version(void *logctx)
      // function (for functions returning larger structs), thus skip the check in those
      // configurations.
  #if !defined(_WIN32) || !defined(__GNUC__) || !ARCH_X86_32 || AV_GCC_VERSION_AT_LEAST(4, 7)
+-    OpenH264Version libver = WelsGetCodecVersion();
++    OpenH264Version libver;
 +
 +#ifdef CONFIG_LIBOPENH264_DLOPEN
-+    if (loadLibOpenH264(logctx))
++    if (loadLibOpenH264(logctx)) {
 +         return AVERROR_EXTERNAL;
++    }
 +#endif
 +
-     OpenH264Version libver = WelsGetCodecVersion();
++    libver = WelsGetCodecVersion();
      if (memcmp(&libver, &g_stCodecVersion, sizeof(libver))) {
          av_log(logctx, AV_LOG_ERROR, "Incorrect library version loaded\n");
-diff --git a/libavcodec/libopenh264_dlopen.h b/libavcodec/libopenh264_dlopen.h
+         return AVERROR(EINVAL);
+diff --git a/libavcodec/libopenh264_dlopen.c b/libavcodec/libopenh264_dlopen.c
 new file mode 100644
-index 0000000000..c58fcd704d
+index 0000000000..b350679f18
 --- /dev/null
-+++ b/libavcodec/libopenh264_dlopen.h
-@@ -0,0 +1,164 @@
-+/*!
-+ *@page License
++++ b/libavcodec/libopenh264_dlopen.c
+@@ -0,0 +1,147 @@
++/*
++ * OpenH264 dlopen code
 + *
-+ * \copy
-+ *     Copyright (c)  2022, Andreas Schneider <asn@cryptomilk.org>
-+ *     All rights reserved.
++ * Copyright (C) 2022 Andreas Schneider <asn@cryptomilk.org>
 + *
-+ *     Redistribution and use in source and binary forms, with or without
-+ *     modification, are permitted provided that the following conditions
-+ *     are met:
++ * This file is part of FFmpeg.
 + *
-+ *        * Redistributions of source code must retain the above copyright
-+ *          notice, this list of conditions and the following disclaimer.
++ * FFmpeg is free software; you can redistribute it and/or
++ * modify it under the terms of the GNU Lesser General Public
++ * License as published by the Free Software Foundation; either
++ * version 2.1 of the License, or (at your option) any later version.
 + *
-+ *        * Redistributions in binary form must reproduce the above copyright
-+ *          notice, this list of conditions and the following disclaimer in
-+ *          the documentation and/or other materials provided with the
-+ *          distribution.
++ * FFmpeg is distributed in the hope that it will be useful,
++ * but WITHOUT ANY WARRANTY; without even the implied warranty of
++ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
++ * Lesser General Public License for more details.
 + *
-+ *     THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
-+ *     "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
-+ *     LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS
-+ *     FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE
-+ *     COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT,
-+ *     INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING,
-+ *     BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
-+ *     LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER
-+ *     CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT
-+ *     LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN
-+ *     ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
-+ *     POSSIBILITY OF SUCH DAMAGE.
-+ *
++ * You should have received a copy of the GNU Lesser General Public
++ * License along with FFmpeg; if not, write to the Free Software
++ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA
 + */
-+
-+#ifdef CONFIG_LIBOPENH264_DLOPEN
 +
 +#include <dlfcn.h>
 +
-+#include <wels/codec_api.h>
-+#include <wels/codec_ver.h>
++#include "libopenh264_dlopen.h"
 +
-+#include "avcodec.h"
 +/*
 + * The symbol binding makes sure we do not run into strict aliasing issues which
 + * can lead into segfaults.
@@ -157,40 +161,33 @@ index 0000000000..c58fcd704d
 +/* Symbols are bound by loadLibOpenH264() */
 +static struct oh264_symbols openh264_symbols;
 +
-+static int oh264_WelsCreateSVCEncoder(ISVCEncoder **ppEncoder) {
++int oh264_WelsCreateSVCEncoder(ISVCEncoder **ppEncoder) {
 +  return openh264_symbols._oh264_WelsCreateSVCEncoder.f(ppEncoder);
 +}
-+#define WelsCreateSVCEncoder oh264_WelsCreateSVCEncoder
 +
-+static void oh264_WelsDestroySVCEncoder(ISVCEncoder *pEncoder) {
++void oh264_WelsDestroySVCEncoder(ISVCEncoder *pEncoder) {
 +  return openh264_symbols._oh264_WelsDestroySVCEncoder.f(pEncoder);
 +}
-+#define WelsDestroySVCEncoder oh264_WelsDestroySVCEncoder
 +
-+static int oh264_WelsGetDecoderCapability(SDecoderCapability *pDecCapability) {
++int oh264_WelsGetDecoderCapability(SDecoderCapability *pDecCapability) {
 +  return openh264_symbols._oh264_WelsGetDecoderCapability.f(pDecCapability);
 +}
-+#define WelsGetDecoderCapability oh264_WelsGetDecoderCapability
 +
-+static long oh264_WelsCreateDecoder(ISVCDecoder **ppDecoder) {
++long oh264_WelsCreateDecoder(ISVCDecoder **ppDecoder) {
 +  return openh264_symbols._oh264_WelsCreateDecoder.f(ppDecoder);
 +}
-+#define WelsCreateDecoder oh264_WelsCreateDecoder
 +
-+static void oh264_WelsDestroyDecoder(ISVCDecoder *pDecoder) {
++void oh264_WelsDestroyDecoder(ISVCDecoder *pDecoder) {
 +  return openh264_symbols._oh264_WelsDestroyDecoder.f(pDecoder);
 +}
-+#define WelsDestroyDecoder oh264_WelsDestroyDecoder
 +
-+static OpenH264Version oh264_WelsGetCodecVersion(void) {
++OpenH264Version oh264_WelsGetCodecVersion(void) {
 +  return openh264_symbols._oh264_WelsGetCodecVersion.f();
 +}
-+#define WelsGetCodecVersion oh264_WelsGetCodecVersion
 +
-+static void oh264_WelsGetCodecVersionEx(OpenH264Version *pVersion) {
++void oh264_WelsGetCodecVersionEx(OpenH264Version *pVersion) {
 +  openh264_symbols._oh264_WelsGetCodecVersionEx.f(pVersion);
 +}
-+#define WelsGetCodecVersionEx oh264_WelsGetCodecVersionEx
 +
 +static void *_oh264_bind_symbol(AVCodecContext *avctx,
 +                                void *handle,
@@ -219,9 +216,14 @@ index 0000000000..c58fcd704d
 +    }                                                                        \
 +  }
 +
-+static int loadLibOpenH264(AVCodecContext *avctx) {
++int loadLibOpenH264(AVCodecContext *avctx) {
++  static bool initialized = false;
 +  void *libopenh264 = NULL;
 +  const char *err = NULL;
++
++  if (initialized) {
++      return 0;
++  }
 +
 +#define OPENH264_LIB "libopenh264.so.6"
 +  libopenh264 = dlopen(OPENH264_LIB, RTLD_LAZY);
@@ -230,7 +232,8 @@ index 0000000000..c58fcd704d
 +    av_log(avctx, AV_LOG_WARNING,
 +           "%s: %s is missing, openh264 support will be disabled\n", err,
 +           OPENH264_LIB);
-+    if (libopenh264) {
++
++    if (libopenh264 != NULL) {
 +      dlclose(libopenh264);
 +    }
 +    return 1;
@@ -244,10 +247,74 @@ index 0000000000..c58fcd704d
 +  oh264_bind_symbol(avctx, libopenh264, WelsGetCodecVersion);
 +  oh264_bind_symbol(avctx, libopenh264, WelsGetCodecVersionEx);
 +
++  initialized = true;
++
 +  return 0;
 +}
+diff --git a/libavcodec/libopenh264_dlopen.h b/libavcodec/libopenh264_dlopen.h
+new file mode 100644
+index 0000000000..d7d8bb7cad
+--- /dev/null
++++ b/libavcodec/libopenh264_dlopen.h
+@@ -0,0 +1,58 @@
++/*
++ * OpenH264 dlopen code
++ *
++ * Copyright (C) 2022 Andreas Schneider <asn@cryptomilk.org>
++ *
++ * This file is part of FFmpeg.
++ *
++ * FFmpeg is free software; you can redistribute it and/or
++ * modify it under the terms of the GNU Lesser General Public
++ * License as published by the Free Software Foundation; either
++ * version 2.1 of the License, or (at your option) any later version.
++ *
++ * FFmpeg is distributed in the hope that it will be useful,
++ * but WITHOUT ANY WARRANTY; without even the implied warranty of
++ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
++ * Lesser General Public License for more details.
++ *
++ * You should have received a copy of the GNU Lesser General Public
++ * License along with FFmpeg; if not, write to the Free Software
++ * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA
++ */
 +
-+#endif // CONFIG_LIBOPENH264_DLOPEN
++#ifndef HAVE_LIBOPENH264_DLOPEN_H
++#define HAVE_LIBOPENH264_DLOPEN_H
++
++#ifdef CONFIG_LIBOPENH264_DLOPEN
++
++#include <wels/codec_api.h>
++#include <wels/codec_ver.h>
++
++#include "avcodec.h"
++
++int oh264_WelsCreateSVCEncoder(ISVCEncoder **ppEncoder);
++#define WelsCreateSVCEncoder oh264_WelsCreateSVCEncoder
++
++void oh264_WelsDestroySVCEncoder(ISVCEncoder *pEncoder);
++#define WelsDestroySVCEncoder oh264_WelsDestroySVCEncoder
++
++int oh264_WelsGetDecoderCapability(SDecoderCapability *pDecCapability);
++#define WelsGetDecoderCapability oh264_WelsGetDecoderCapability
++
++long oh264_WelsCreateDecoder(ISVCDecoder **ppDecoder);
++#define WelsCreateDecoder oh264_WelsCreateDecoder
++
++void oh264_WelsDestroyDecoder(ISVCDecoder *pDecoder);
++#define WelsDestroyDecoder oh264_WelsDestroyDecoder
++
++OpenH264Version oh264_WelsGetCodecVersion(void);
++#define WelsGetCodecVersion oh264_WelsGetCodecVersion
++
++void oh264_WelsGetCodecVersionEx(OpenH264Version *pVersion);
++#define WelsGetCodecVersionEx oh264_WelsGetCodecVersionEx
++
++int loadLibOpenH264(AVCodecContext *avctx);
++
++#endif /* CONFIG_LIBOPENH264_DLOPEN */
++
++#endif /* HAVE_LIBOPENH264_DLOPEN_H */
 diff --git a/libavcodec/libopenh264dec.c b/libavcodec/libopenh264dec.c
 index 7f5e85402a..34b238519e 100644
 --- a/libavcodec/libopenh264dec.c
