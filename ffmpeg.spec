@@ -69,7 +69,7 @@ Name:           ffmpeg
 %global pkg_name %{name}%{?pkg_suffix}
 
 Version:        5.0
-Release:        7%{?dist}
+Release:        8%{?dist}
 Summary:        A complete solution to record, convert and stream audio and video
 License:        GPLv3+
 URL:            https://ffmpeg.org/
@@ -103,6 +103,8 @@ Patch5:         ffmpeg-allow-fdk-aac-free.patch
 Patch6:         ffmpeg-fix-gnutls-priority.patch
 # https://ffmpeg.org/pipermail/ffmpeg-devel/2021-September/285401.html
 Patch7:         ffmpeg-support-chromium.patch
+# http://ffmpeg.org/pipermail/ffmpeg-devel/2022-February/293194.html
+Patch8:         ffmpeg-openh264-averr-on-bad-version.patch
 
 # Set up dlopen for openh264
 Patch1001:      ffmpeg-dlopen-openh264.patch
@@ -818,6 +820,9 @@ rm -rf %{buildroot}%{_datadir}/%{name}/examples
 %{_mandir}/man3/libswscale.3*
 
 %changelog
+* Fri Feb 18 2022 Neal Gompa <ngompa@fedoraproject.org> - 5.0-8
+- Add patch to return correct AVERROR with bad OpenH264 versions
+
 * Fri Feb 18 2022 Neal Gompa <ngompa@fedoraproject.org> - 5.0-7
 - Update OpenH264 dlopen patch to split dlopen code into c and h files
 
