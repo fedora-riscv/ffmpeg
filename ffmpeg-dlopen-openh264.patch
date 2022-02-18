@@ -1,4 +1,4 @@
-From 5f72b7ea6a214f3c32e4089486ece8f1ad3d07a7 Mon Sep 17 00:00:00 2001
+From 081b35c5b598fef0a2e47753752f7607ff90a2d3 Mon Sep 17 00:00:00 2001
 From: Neal Gompa <ngompa@fedoraproject.org>
 Date: Fri, 18 Feb 2022 08:12:54 -0500
 Subject: [PATCH] avcodec/openh264: Add the ability to dlopen() OpenH264
@@ -24,7 +24,7 @@ Signed-off-by: Neal Gompa <ngompa@fedoraproject.org>
  create mode 100644 libavcodec/libopenh264_dlopen.h
 
 diff --git a/configure b/configure
-index 6b5ef6332e..0a7ccc7dc4 100755
+index 6b5ef6332e..f08e566e98 100755
 --- a/configure
 +++ b/configure
 @@ -250,6 +250,7 @@ External library support:
@@ -47,7 +47,7 @@ index 6b5ef6332e..0a7ccc7dc4 100755
                                   require libopencv opencv2/core/core_c.h cvCreateImageHeader -lopencv_core -lopencv_imgproc; } ||
                                 require_pkg_config libopencv opencv opencv/cxcore.h cvCreateImageHeader; }
  enabled libopenh264       && require_pkg_config libopenh264 openh264 wels/codec_api.h WelsGetCodecVersion
-+enabled libopenh264_dlopen && enable libopenh264 && add_cppflags "-I$(dirname readlink -f $0)/ffdlopenhdrs/include -DCONFIG_LIBOPENH264_DLOPEN=1"
++enabled libopenh264_dlopen && enable libopenh264 && add_cppflags "-I$(dirname `readlink -f $0`)/ffdlopenhdrs/include -DCONFIG_LIBOPENH264_DLOPEN=1"
  enabled libopenjpeg       && { check_pkg_config libopenjpeg "libopenjp2 >= 2.1.0" openjpeg.h opj_version ||
                                 { require_pkg_config libopenjpeg "libopenjp2 >= 2.1.0" openjpeg.h opj_version -DOPJ_STATIC && add_cppflags -DOPJ_STATIC; } }
  enabled libopenmpt        && require_pkg_config libopenmpt "libopenmpt >= 0.2.6557" libopenmpt/libopenmpt.h openmpt_module_create -lstdc++ && append libopenmpt_extralibs "-lstdc++"
