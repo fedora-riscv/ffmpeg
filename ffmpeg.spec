@@ -69,7 +69,7 @@ Name:           ffmpeg
 %global pkg_name %{name}%{?pkg_suffix}
 
 Version:        5.0
-Release:        9%{?dist}
+Release:        10%{?dist}
 Summary:        A complete solution to record, convert and stream audio and video
 License:        GPLv3+
 URL:            https://ffmpeg.org/
@@ -818,6 +818,9 @@ rm -rf %{buildroot}%{_datadir}/%{name}/examples
 %{_mandir}/man3/libswscale.3*
 
 %changelog
+* Thu Mar 10 2022 Sandro Mani <manisandro@gmail.com> - 5.0-10
+- Rebuild for tesseract 5.1.0
+
 * Tue Mar 08 2022 Neal Gompa <ngompa@fedoraproject.org> - 5.0-9
 - Drop ffmpeg chromium support patch (#2061392)
 
