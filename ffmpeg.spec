@@ -69,7 +69,7 @@ Name:           ffmpeg
 %global pkg_name %{name}%{?pkg_suffix}
 
 Version:        5.0
-Release:        10%{?dist}
+Release:        11%{?dist}
 Summary:        A complete solution to record, convert and stream audio and video
 License:        GPLv3+
 URL:            https://ffmpeg.org/
@@ -128,6 +128,7 @@ BuildRequires:  lame-devel
 %ifnarch s390 s390x
 BuildRequires:  libcrystalhd-devel
 %endif
+BuildRequires:  libgcrypt-devel
 BuildRequires:  libmysofa-devel
 BuildRequires:  make
 BuildRequires:  nasm
@@ -145,6 +146,7 @@ BuildRequires:  pkgconfig(fontconfig)
 BuildRequires:  pkgconfig(freetype2)
 BuildRequires:  pkgconfig(frei0r)
 BuildRequires:  pkgconfig(fribidi)
+BuildRequires:  pkgconfig(gl)
 BuildRequires:  pkgconfig(gnutls)
 BuildRequires:  pkgconfig(ilbc)
 BuildRequires:  pkgconfig(jack)
@@ -173,6 +175,7 @@ BuildRequires:  pkgconfig(lilv-0)
 BuildRequires:  pkgconfig(netcdf)
 BuildRequires:  pkgconfig(ogg)
 BuildRequires:  pkgconfig(openal)
+BuildRequires:  pkgconfig(OpenCL)
 BuildRequires:  pkgconfig(opencv4)
 BuildRequires:  pkgconfig(opus)
 BuildRequires:  pkgconfig(rav1e)
@@ -538,8 +541,8 @@ cp -a doc/examples/{*.c,Makefile,README} _doc/examples/
     --libdir=%{_libdir} \
     --mandir=%{_mandir} \
     --arch=%{_target_cpu} \
-    --optflags="%{optflags}" \
-    --extra-cflags="%{build_cflags}" \
+    --optflags="%{build_cflags}" \
+    --extra-ldflags="%{build_ldflags}" \
     --disable-htmlpages \
     --enable-pic \
     --disable-stripping \
@@ -549,9 +552,14 @@ cp -a doc/examples/{*.c,Makefile,README} _doc/examples/
     --enable-version3 \
     --enable-libsmbclient \
     --disable-openssl \
+    --enable-bzlib \
+    --enable-frei0r \
+    --enable-chromaprint \
+    --enable-gcrypt \
     --enable-gnutls \
     --enable-ladspa \
 %if %{with vulkan}
+    --enable-libglslang \
     --enable-vulkan \
 %endif
     --disable-cuda-sdk \
@@ -570,7 +578,9 @@ cp -a doc/examples/{*.c,Makefile,README} _doc/examples/
     --enable-libfreetype \
     --enable-libfribidi \
     --enable-libgsm \
+    --enable-libilbc \
     --enable-libjack \
+    --enable-libmodplug \
     --enable-libmp3lame \
     --enable-libmysofa \
     --enable-libopenh264-dlopen \
@@ -579,7 +589,9 @@ cp -a doc/examples/{*.c,Makefile,README} _doc/examples/
     --enable-libopus \
     --enable-libpulse \
     --enable-librav1e \
+    --enable-librsvg \
     --enable-librubberband \
+    --enable-libsnappy \
 %if %{with svtav1}
     --enable-libsvtav1 \
 %endif
@@ -587,6 +599,7 @@ cp -a doc/examples/{*.c,Makefile,README} _doc/examples/
     --enable-libspeex \
     --enable-libssh \
     --enable-libsrt \
+    --enable-libtesseract \
     --enable-libtheora \
     --enable-libtwolame \
     --enable-libvidstab \
@@ -599,6 +612,7 @@ cp -a doc/examples/{*.c,Makefile,README} _doc/examples/
     --enable-libwebp \
     --enable-libxml2 \
     --enable-libzimg \
+    --enable-libzmq \
     --enable-libzvbi \
 %if %{with lto}
   --enable-lto \
@@ -625,6 +639,11 @@ cp -a doc/examples/{*.c,Makefile,README} _doc/examples/
 %if %{with xvid}
     --enable-libxvid \
 %endif
+    --enable-openal \
+    --enable-opencl \
+    --enable-opengl \
+    --enable-pthreads \
+    --enable-vapoursynth \
 %if %{without all_codecs}
     --enable-muxers \
     --enable-demuxers \
@@ -818,6 +837,12 @@ rm -rf %{buildroot}%{_datadir}/%{name}/examples
 %{_mandir}/man3/libswscale.3*
 
 %changelog
+* Tue Apr 05 2022 Dominik Mierzejewski <dominik@greysector.net> - 5.0-11
+- Enable OpenCL acceleration
+- be explicit about enabled external features in configure
+- enable gcrypt
+- drop duplicate CFLAGS and use Fedora LDFLAGS
+
 * Thu Mar 10 2022 Sandro Mani <manisandro@gmail.com> - 5.0-10
 - Rebuild for tesseract 5.1.0
 
