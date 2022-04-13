@@ -68,8 +68,8 @@
 Name:           ffmpeg
 %global pkg_name %{name}%{?pkg_suffix}
 
-Version:        5.0
-Release:        11%{?dist}
+Version:        5.0.1
+Release:        1%{?dist}
 Summary:        A complete solution to record, convert and stream audio and video
 License:        GPLv3+
 URL:            https://ffmpeg.org/
@@ -837,6 +837,9 @@ rm -rf %{buildroot}%{_datadir}/%{name}/examples
 %{_mandir}/man3/libswscale.3*
 
 %changelog
+* Tue Apr 12 2022 Neal Gompa <ngompa@fedoraproject.org> - 5.0.1-1
+- Update to 5.0.1 to fix crashes with muxing MP4 video (#2073980)
+
 * Tue Apr 05 2022 Dominik Mierzejewski <dominik@greysector.net> - 5.0-11
 - Enable OpenCL acceleration
 - be explicit about enabled external features in configure
