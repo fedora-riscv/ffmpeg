@@ -21,12 +21,14 @@ hevc_qsv # hardware
 hevc_v4l2m2m # hardware
 hevc_vaapi # hardware
 huffyuv # trivial+zlib
+ilbc # ilbc
 jpegls
 jpeg2000
 libaom # libaom
 libaom_av1 # libaom
 libcodec2 # codec2
 libgsm # libgsm
+libilbc # ilbc
 libmp3lame # lame
 libopenh264 # openh264_dlopen
 libopenjpeg # openjpeg

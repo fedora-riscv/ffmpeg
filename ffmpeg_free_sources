@@ -681,6 +681,7 @@ libavcodec/libfdk-aacdec.c
 libavcodec/libfdk-aacenc.c
 libavcodec/libgsmdec.c
 libavcodec/libgsmenc.c
+libavcodec/libilbc.c
 libavcodec/libmp3lame.c
 libavcodec/libopenh264.c
 libavcodec/libopenh264.h
