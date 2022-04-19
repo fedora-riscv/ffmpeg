@@ -676,6 +676,7 @@ libavcodec/lclenc.c
 libavcodec/libaomdec.c
 libavcodec/libaomenc.c
 libavcodec/libavcodec.v
+libavcodec/libcodec2.c
 libavcodec/libdav1d.c
 libavcodec/libfdk-aacdec.c
 libavcodec/libfdk-aacenc.c
