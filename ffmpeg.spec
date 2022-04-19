@@ -69,7 +69,7 @@ Name:           ffmpeg
 %global pkg_name %{name}%{?pkg_suffix}
 
 Version:        5.0.1
-Release:        3%{?dist}
+Release:        4%{?dist}
 Summary:        A complete solution to record, convert and stream audio and video
 License:        GPLv3+
 URL:            https://ffmpeg.org/
@@ -226,7 +226,7 @@ BuildRequires:  pkgconfig(SvtAv1Enc) >= 0.8.4
 %endif
 %if %{with vulkan}
 BuildRequires:  vulkan-loader-devel
-BuildRequires:  glslang-devel
+BuildRequires:  pkgconfig(shaderc) >= 2019.1
 %endif
 %if %{with x264}
 BuildRequires:  pkgconfig(x264)
@@ -559,7 +559,7 @@ cp -a doc/examples/{*.c,Makefile,README} _doc/examples/
     --enable-gnutls \
     --enable-ladspa \
 %if %{with vulkan}
-    --enable-libglslang \
+    --enable-libshaderc \
     --enable-vulkan \
 %endif
     --disable-cuda-sdk \
@@ -838,6 +838,9 @@ rm -rf %{buildroot}%{_datadir}/%{name}/examples
 %{_mandir}/man3/libswscale.3*
 
 %changelog
+* Tue Apr 19 2022 Neal Gompa <ngompa@fedoraproject.org> - 5.0.1-4
+- Use shaderc for Vulkan support
+
 * Mon Apr 18 2022 Neal Gompa <ngompa@fedoraproject.org> - 5.0.1-3
 - Fix codec2 support enablement
 

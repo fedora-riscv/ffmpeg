@@ -2841,6 +2841,7 @@ libavutil/vulkan.h
 libavutil/vulkan_functions.h
 libavutil/vulkan_glslang.c
 libavutil/vulkan_loader.h
+libavutil/vulkan_shaderc.c
 libavutil/wchar_filename.h
 libavutil/x86/Makefile
 libavutil/x86/asm.h
