@@ -20,7 +20,6 @@ ilbc # ilbc
 jpeg2000 # openjpeg2
 libaom # libaom
 libaom_av1 # libaom
-libcelt # celt, opus
 libcodec2 # codec2
 libdav1d # av1
 libgsm # libgsm
