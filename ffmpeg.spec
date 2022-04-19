@@ -69,7 +69,7 @@ Name:           ffmpeg
 %global pkg_name %{name}%{?pkg_suffix}
 
 Version:        5.0.1
-Release:        4%{?dist}
+Release:        5%{?dist}
 Summary:        A complete solution to record, convert and stream audio and video
 License:        GPLv3+
 URL:            https://ffmpeg.org/
@@ -139,7 +139,6 @@ BuildRequires:  pkgconfig(bzip2)
 BuildRequires:  pkgconfig(caca)
 BuildRequires:  pkgconfig(codec2)
 BuildRequires:  pkgconfig(dav1d)
-BuildRequires:  pkgconfig(enca)
 BuildRequires:  pkgconfig(ffnvcodec)
 BuildRequires:  pkgconfig(flac)
 BuildRequires:  pkgconfig(fontconfig)
@@ -838,6 +837,9 @@ rm -rf %{buildroot}%{_datadir}/%{name}/examples
 %{_mandir}/man3/libswscale.3*
 
 %changelog
+* Tue Apr 19 2022 Neal Gompa <ngompa@fedoraproject.org> - 5.0.1-5
+- Drop unused enca build dependency
+
 * Tue Apr 19 2022 Neal Gompa <ngompa@fedoraproject.org> - 5.0.1-4
 - Use shaderc for Vulkan support
 
