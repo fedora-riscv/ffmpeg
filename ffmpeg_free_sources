@@ -383,7 +383,9 @@ libavcodec/cbs_h264_syntax_template.c
 libavcodec/cbs_h265.h
 libavcodec/cbs_h265_syntax_template.c
 libavcodec/cbs_internal.h
+libavcodec/cbs_jpeg.c
 libavcodec/cbs_jpeg.h
+libavcodec/cbs_jpeg_syntax_template.c
 libavcodec/cbs_mpeg2.c
 libavcodec/cbs_mpeg2.h
 libavcodec/cbs_mpeg2_syntax_template.c
@@ -1050,6 +1052,10 @@ libavcodec/vaapi_encode.c
 libavcodec/vaapi_encode.h
 libavcodec/vaapi_encode_h264.c
 libavcodec/vaapi_encode_h265.c
+libavcodec/vaapi_encode_mjpeg.c
+libavcodec/vaapi_encode_mpeg2.c
+libavcodec/vaapi_encode_vp8.c
+libavcodec/vaapi_encode_vp9.c
 libavcodec/vaapi_hevc.h
 libavcodec/vaapi_mjpeg.c
 libavcodec/vaapi_mpeg2.c

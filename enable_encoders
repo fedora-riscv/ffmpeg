@@ -46,11 +46,13 @@ libwebp # libwebp
 libwebp_anim # libwebp
 mjpeg # mjpegtools
 mjpeg_qsv # mjpegtools
+mjpeg_vaapi # mjpegtools
 mp2 # twolame
 mp2fixed # twolame
 mpeg1video
 mpeg2video
 mpeg2_qsv
+mpeg2_vaapi
 mpeg4_v4l2m2m # hardware
 opus # opus
 pam
@@ -102,7 +104,9 @@ vc1_v4l2m2m # hardware
 vorbis # libvorbis
 vp8_qsv # libvpx
 vp8_v4l2m2m # libvpx
+vp8_vaapi # libvpx
 vp9_qsv # libvpx
+vp9_vaapi # libvpx
 webvtt # trivial
 wrapped_avframe # passthrough
 xbm # (X11)

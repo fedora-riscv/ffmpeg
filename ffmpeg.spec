@@ -69,7 +69,7 @@ Name:           ffmpeg
 %global pkg_name %{name}%{?pkg_suffix}
 
 Version:        5.0.1
-Release:        5%{?dist}
+Release:        6%{?dist}
 Summary:        A complete solution to record, convert and stream audio and video
 License:        GPLv3+
 URL:            https://ffmpeg.org/
@@ -647,6 +647,7 @@ cp -a doc/examples/{*.c,Makefile,README} _doc/examples/
 %if %{without all_codecs}
     --enable-muxers \
     --enable-demuxers \
+    --enable-hwaccels \
     --disable-encoders \
     --disable-decoders \
     --disable-decoder="mpeg4,h263,h264,hevc,vc1" \
@@ -837,6 +838,10 @@ rm -rf %{buildroot}%{_datadir}/%{name}/examples
 %{_mandir}/man3/libswscale.3*
 
 %changelog
+* Sun Apr 24 2022 Neal Gompa <ngompa@fedoraproject.org> - 5.0.1-6
+- Add VAAPI encoders for mjpeg, mpeg2, vp8, and vp9
+- Ensure hwaccels for enabled codecs are turned on
+
 * Tue Apr 19 2022 Neal Gompa <ngompa@fedoraproject.org> - 5.0.1-5
 - Drop unused enca build dependency
 
