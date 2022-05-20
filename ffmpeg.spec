@@ -69,7 +69,7 @@ Name:           ffmpeg
 %global pkg_name %{name}%{?pkg_suffix}
 
 Version:        5.0.1
-Release:        6%{?dist}
+Release:        7%{?dist}
 Summary:        A complete solution to record, convert and stream audio and video
 License:        GPLv3+
 URL:            https://ffmpeg.org/
@@ -838,6 +838,9 @@ rm -rf %{buildroot}%{_datadir}/%{name}/examples
 %{_mandir}/man3/libswscale.3*
 
 %changelog
+* Fri May 20 2022 Sandro Mani <manisandro@gmail.com> - 5.0.1-7
+- Rebuild for gdal-3.5.0 and/or openjpeg-2.5.0
+
 * Sun Apr 24 2022 Neal Gompa <ngompa@fedoraproject.org> - 5.0.1-6
 - Add VAAPI encoders for mjpeg, mpeg2, vp8, and vp9
 - Ensure hwaccels for enabled codecs are turned on
