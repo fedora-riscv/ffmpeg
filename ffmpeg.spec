@@ -69,7 +69,7 @@ Name:           ffmpeg
 %global pkg_name %{name}%{?pkg_suffix}
 
 Version:        5.0.1
-Release:        7%{?dist}
+Release:        8%{?dist}
 Summary:        A complete solution to record, convert and stream audio and video
 License:        GPLv3+
 URL:            https://ffmpeg.org/
@@ -838,6 +838,9 @@ rm -rf %{buildroot}%{_datadir}/%{name}/examples
 %{_mandir}/man3/libswscale.3*
 
 %changelog
+* Sat May 21 2022 Sandro Mani <manisandro@gmail.com> - 5.0.1-8
+- Rebuild for gdal-3.5.0 and/or openjpeg-2.5.0
+
 * Fri May 20 2022 Sandro Mani <manisandro@gmail.com> - 5.0.1-7
 - Rebuild for gdal-3.5.0 and/or openjpeg-2.5.0
 
