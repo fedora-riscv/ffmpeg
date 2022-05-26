@@ -2,6 +2,11 @@
 %bcond_with upstream_tarball
 %bcond_with all_codecs
 
+# Break dependency cycles, e.g.:
+#   ffmpeg (libavcodec-free) → chromaprint → ffmpeg
+# by disabling certain optional dependencies.
+%bcond_without bootstrap
+
 # If you want to do a build with the upstream source tarball, then set the
 # pkg_suffix to %%nil. We can't handle this with a conditional, as srpm
 # generation would not take it into account.
@@ -69,7 +74,7 @@ Name:           ffmpeg
 %global pkg_name %{name}%{?pkg_suffix}
 
 Version:        5.0.1
-Release:        8%{?dist}
+Release:        9%{?dist}
 Summary:        A complete solution to record, convert and stream audio and video
 License:        GPLv3+
 URL:            https://ffmpeg.org/
@@ -147,14 +152,16 @@ BuildRequires:  pkgconfig(frei0r)
 BuildRequires:  pkgconfig(fribidi)
 BuildRequires:  pkgconfig(gl)
 BuildRequires:  pkgconfig(gnutls)
-BuildRequires:  pkgconfig(ilbc)
+BuildRequires:  pkgconfig(libilbc)
 BuildRequires:  pkgconfig(jack)
 BuildRequires:  pkgconfig(libass)
 BuildRequires:  pkgconfig(libbluray)
 BuildRequires:  pkgconfig(libbs2b)
 BuildRequires:  pkgconfig(libcdio)
 BuildRequires:  pkgconfig(libcdio_paranoia)
+%if %{without bootstrap}
 BuildRequires:  pkgconfig(libchromaprint)
+%endif
 BuildRequires:  pkgconfig(libdrm)
 BuildRequires:  pkgconfig(libmodplug)
 BuildRequires:  pkgconfig(libomxil-bellagio)
@@ -553,7 +560,11 @@ cp -a doc/examples/{*.c,Makefile,README} _doc/examples/
     --disable-openssl \
     --enable-bzlib \
     --enable-frei0r \
+%if %{with bootstrap}
+    --disable-chromaprint \
+%else
     --enable-chromaprint \
+%endif
     --enable-gcrypt \
     --enable-gnutls \
     --enable-ladspa \
@@ -838,6 +849,9 @@ rm -rf %{buildroot}%{_datadir}/%{name}/examples
 %{_mandir}/man3/libswscale.3*
 
 %changelog
+* Thu May 26 2022 Benjamin A. Beasley <code@musicinmybrain.net> - 5.0.1-9
+- Rebuild for ilbc-3.0.4 (bootstrap)
+
 * Sat May 21 2022 Sandro Mani <manisandro@gmail.com> - 5.0.1-8
 - Rebuild for gdal-3.5.0 and/or openjpeg-2.5.0
 
