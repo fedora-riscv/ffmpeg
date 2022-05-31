@@ -5,7 +5,7 @@
 # Break dependency cycles, e.g.:
 #   ffmpeg (libavcodec-free) → chromaprint → ffmpeg
 # by disabling certain optional dependencies.
-%bcond_without bootstrap
+%bcond_with bootstrap
 
 # If you want to do a build with the upstream source tarball, then set the
 # pkg_suffix to %%nil. We can't handle this with a conditional, as srpm
@@ -849,6 +849,9 @@ rm -rf %{buildroot}%{_datadir}/%{name}/examples
 %{_mandir}/man3/libswscale.3*
 
 %changelog
+* Tue May 31 2022 Neal Gompa <ngompa@fedoraproject.org> - 5.0.1-9
+- Rebuild for ilbc-3.0.4
+
 * Thu May 26 2022 Benjamin A. Beasley <code@musicinmybrain.net> - 5.0.1-9
 - Rebuild for ilbc-3.0.4 (bootstrap)
 
