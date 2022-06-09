@@ -74,7 +74,7 @@ Name:           ffmpeg
 %global pkg_name %{name}%{?pkg_suffix}
 
 Version:        5.0.1
-Release:        10%{?dist}
+Release:        11%{?dist}
 Summary:        A complete solution to record, convert and stream audio and video
 License:        GPLv3+
 URL:            https://ffmpeg.org/
@@ -289,6 +289,7 @@ This build of ffmpeg is limited in the number of codecs supported.
 %package -n     %{pkg_name}-devel
 Summary:        Development package for %{name}
 Requires:       libavcodec%{?pkg_suffix}-devel = %{version}-%{release}
+Requires:       libavdevice%{?pkg_suffix}-devel = %{version}-%{release}
 Requires:       libavfilter%{?pkg_suffix}-devel = %{version}-%{release}
 Requires:       libavformat%{?pkg_suffix}-devel = %{version}-%{release}
 Requires:       libavutil%{?pkg_suffix}-devel = %{version}-%{release}
@@ -849,6 +850,9 @@ rm -rf %{buildroot}%{_datadir}/%{name}/examples
 %{_mandir}/man3/libswscale.3*
 
 %changelog
+* Thu Jun 09 2022 Neal Gompa <ngompa@fedoraproject.org> - 5.0.1-11
+- Ensure libavdevice-devel is pulled in with devel metapackage
+
 * Sun Jun 05 2022 Neal Gompa <ngompa@fedoraproject.org> - 5.0.1-10
 - Update for OpenH264 2.2.0
 
