@@ -74,7 +74,7 @@ Name:           ffmpeg
 %global pkg_name %{name}%{?pkg_suffix}
 
 Version:        5.0.1
-Release:        11%{?dist}
+Release:        12%{?dist}
 Summary:        A complete solution to record, convert and stream audio and video
 License:        GPLv3+
 URL:            https://ffmpeg.org/
@@ -850,6 +850,9 @@ rm -rf %{buildroot}%{_datadir}/%{name}/examples
 %{_mandir}/man3/libswscale.3*
 
 %changelog
+* Fri Jun 17 2022 Mamoru TASAKA <mtasaka@tbz.t-com.ne.jp> - 5.0.1-12
+- Rebuild for new srt
+
 * Thu Jun 09 2022 Neal Gompa <ngompa@fedoraproject.org> - 5.0.1-11
 - Ensure libavdevice-devel is pulled in with devel metapackage
 
