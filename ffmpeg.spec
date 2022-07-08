@@ -74,7 +74,7 @@ Name:           ffmpeg
 %global pkg_name %{name}%{?pkg_suffix}
 
 Version:        5.0.1
-Release:        13%{?dist}
+Release:        14%{?dist}
 Summary:        A complete solution to record, convert and stream audio and video
 License:        GPLv3+
 URL:            https://ffmpeg.org/
@@ -850,6 +850,9 @@ rm -rf %{buildroot}%{_datadir}/%{name}/examples
 %{_mandir}/man3/libswscale.3*
 
 %changelog
+* Fri Jul 08 2022 Sandro Mani <manisandro@gmail.com> - 5.0.1-14
+- Rebuild (tesseract)
+
 * Wed Jun 22 2022 Robert-André Mauchin <zebob.m@gmail.com> - 5.0.1-13
 - Rebuilt for new aom, dav1d, rav1e and svt-av1
 
