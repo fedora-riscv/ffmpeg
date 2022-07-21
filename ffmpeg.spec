@@ -74,7 +74,7 @@ Name:           ffmpeg
 %global pkg_name %{name}%{?pkg_suffix}
 
 Version:        5.0.1
-Release:        15%{?dist}
+Release:        16%{?dist}
 Summary:        A complete solution to record, convert and stream audio and video
 License:        GPLv3+
 URL:            https://ffmpeg.org/
@@ -850,6 +850,9 @@ rm -rf %{buildroot}%{_datadir}/%{name}/examples
 %{_mandir}/man3/libswscale.3*
 
 %changelog
+* Thu Jul 21 2022 Fedora Release Engineering <releng@fedoraproject.org> - 5.0.1-16
+- Rebuilt for https://fedoraproject.org/wiki/Fedora_37_Mass_Rebuild
+
 * Sat Jul 09 2022 Richard Shaw <hobbes1069@gmail.com> - 5.0.1-15
 - Rebuild for codec2 1.0.4.
 
