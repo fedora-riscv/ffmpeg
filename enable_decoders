@@ -24,6 +24,7 @@ libcodec2 # codec2
 libdav1d # av1
 libgsm # libgsm
 libilbc # ilbc
+libjxl # libjxl
 libopenh264 # openh264_dlopen
 libopenjpeg # openjpeg
 libopus # opus

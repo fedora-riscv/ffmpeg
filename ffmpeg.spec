@@ -73,8 +73,8 @@
 Name:           ffmpeg
 %global pkg_name %{name}%{?pkg_suffix}
 
-Version:        5.0.1
-Release:        16%{?dist}
+Version:        5.1
+Release:        1%{?dist}
 Summary:        A complete solution to record, convert and stream audio and video
 License:        GPLv3+
 URL:            https://ffmpeg.org/
@@ -92,22 +92,13 @@ Source90:       ffmpeg_update_free_sources.sh
 Source91:       ffmpeg_gen_free_tarball.sh
 Source92:       ffmpeg_get_dlopen_headers.sh
 
-# Change path from /usr/local to /usr
-Patch1:         fix-vmaf-model-path.patch
-# Some header cleanup
-# http://ffmpeg.org/pipermail/ffmpeg-devel/2022-February/292877.html
-Patch2:         ffmpeg-fix-exif-include.patch
 # Fixes for reduced codec selection on free build
-Patch3:         ffmpeg-codec-choice.patch
+Patch1:         ffmpeg-codec-choice.patch
 # Better error messages for free build
-Patch4:         ffmpeg-new-coder-errors.patch
+Patch2:         ffmpeg-new-coder-errors.patch
 # Allow to build with fdk-aac-free
 # See https://bugzilla.redhat.com/show_bug.cgi?id=1501522#c112
-Patch5:         ffmpeg-allow-fdk-aac-free.patch
-# http://ffmpeg.org/pipermail/ffmpeg-devel/2022-February/292853.html
-Patch6:         ffmpeg-fix-gnutls-priority.patch
-# http://ffmpeg.org/pipermail/ffmpeg-devel/2022-February/293194.html
-Patch7:         ffmpeg-openh264-averr-on-bad-version.patch
+Patch3:         ffmpeg-allow-fdk-aac-free.patch
 
 # Set up dlopen for openh264
 Patch1001:      ffmpeg-dlopen-openh264.patch
@@ -163,6 +154,7 @@ BuildRequires:  pkgconfig(libcdio_paranoia)
 BuildRequires:  pkgconfig(libchromaprint)
 %endif
 BuildRequires:  pkgconfig(libdrm)
+BuildRequires:  pkgconfig(libjxl)
 BuildRequires:  pkgconfig(libmodplug)
 BuildRequires:  pkgconfig(libomxil-bellagio)
 BuildRequires:  pkgconfig(libopenjp2)
@@ -592,6 +584,7 @@ cp -a doc/examples/{*.c,Makefile,README} _doc/examples/
     --enable-libgsm \
     --enable-libilbc \
     --enable-libjack \
+    --enable-libjxl \
     --enable-libmodplug \
     --enable-libmp3lame \
     --enable-libmysofa \
@@ -698,21 +691,22 @@ cp -a doc/examples/{*.c,Makefile,README} _doc/examples/
     || cat ffbuild/config.log
 
 cat config.h
+cat config_components.h
 
 # Paranoia check
 %if %{without all_codecs}
 # DECODER
 for i in MPEG4 H263 H264 HEVC HEVC_RKMPP VC1; do
-    grep -q "#define CONFIG_${i}_DECODER 0" config.h
+    grep -q "#define CONFIG_${i}_DECODER 0" config_components.h
 done
 
 # ENCODER
 for i in MPEG4 H263 H263P LIBX264 LIBX264RGB LIBX265 LIBXVID; do
-    grep -q "#define CONFIG_${i}_ENCODER 0" config.h
+    grep -q "#define CONFIG_${i}_ENCODER 0" config_components.h
 done
 for i in H264 HEVC; do
     for j in MF VIDEOTOOLBOX; do
-        grep -q "#define CONFIG_${i}_${j}_ENCODER 0" config.h
+        grep -q "#define CONFIG_${i}_${j}_ENCODER 0" config_components.h
     done
 done
 %endif
@@ -850,6 +844,9 @@ rm -rf %{buildroot}%{_datadir}/%{name}/examples
 %{_mandir}/man3/libswscale.3*
 
 %changelog
+* Wed Aug 24 2022 Neal Gompa <ngompa@fedoraproject.org> - 5.1-1
+- Rebase to version 5.1
+
 * Thu Jul 21 2022 Fedora Release Engineering <releng@fedoraproject.org> - 5.0.1-16
 - Rebuilt for https://fedoraproject.org/wiki/Fedora_37_Mass_Rebuild
 

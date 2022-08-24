@@ -29,6 +29,7 @@ libaom_av1 # libaom
 libcodec2 # codec2
 libgsm # libgsm
 libilbc # ilbc
+libjxl # libjxl
 libmp3lame # lame
 libopenh264 # openh264_dlopen
 libopenjpeg # openjpeg

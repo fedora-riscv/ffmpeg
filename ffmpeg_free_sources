@@ -139,9 +139,13 @@ fftools/ffmpeg.c
 fftools/ffmpeg.h
 fftools/ffmpeg_filter.c
 fftools/ffmpeg_hw.c
+fftools/ffmpeg_mux.c
 fftools/ffmpeg_opt.c
 fftools/ffplay.c
 fftools/ffprobe.c
+fftools/fopen_utf8.h
+fftools/opt_common.c
+fftools/opt_common.h
 libavcodec/Makefile
 libavcodec/aac_ac3_parser.c
 libavcodec/aac_ac3_parser.h
@@ -207,6 +211,7 @@ libavcodec/ac3dec.h
 libavcodec/ac3dec_data.c
 libavcodec/ac3dec_data.h
 libavcodec/ac3dec_float.c
+libavcodec/ac3defs.h
 libavcodec/ac3dsp.c
 libavcodec/ac3dsp.h
 libavcodec/ac3enc.c
@@ -343,6 +348,8 @@ libavcodec/avdct.h
 libavcodec/avfft.c
 libavcodec/avfft.h
 libavcodec/avpacket.c
+libavcodec/avs2.c
+libavcodec/avs2.h
 libavcodec/avs2_parser.c
 libavcodec/avs3.h
 libavcodec/avs3_parser.c
@@ -403,6 +410,7 @@ libavcodec/codec2utils.h
 libavcodec/codec_desc.c
 libavcodec/codec_desc.h
 libavcodec/codec_id.h
+libavcodec/codec_internal.h
 libavcodec/codec_par.c
 libavcodec/codec_par.h
 libavcodec/cook_parser.c
@@ -464,6 +472,7 @@ libavcodec/dovi_rpu.h
 libavcodec/dpx_parser.c
 libavcodec/dump_extradata_bsf.c
 libavcodec/dv.h
+libavcodec/dv_error_marker_bsf.c
 libavcodec/dv_profile.c
 libavcodec/dv_profile.h
 libavcodec/dv_profile_internal.h
@@ -476,6 +485,8 @@ libavcodec/dvdsub_parser.c
 libavcodec/dxva2.h
 libavcodec/dynamic_hdr10_plus.c
 libavcodec/dynamic_hdr10_plus.h
+libavcodec/dynamic_hdr_vivid.c
+libavcodec/dynamic_hdr_vivid.h
 libavcodec/eac3_core_bsf.c
 libavcodec/eac3_data.h
 libavcodec/eac3dec.c
@@ -529,7 +540,11 @@ libavcodec/flacdsp.h
 libavcodec/flacdsp_lpc_template.c
 libavcodec/flacdsp_template.c
 libavcodec/flacenc.c
-libavcodec/flv.h
+libavcodec/float2half.h
+libavcodec/flvdec.c
+libavcodec/flvdec.h
+libavcodec/flvenc.c
+libavcodec/flvenc.h
 libavcodec/fmtconvert.c
 libavcodec/fmtconvert.h
 libavcodec/frame_thread_encoder.c
@@ -539,6 +554,7 @@ libavcodec/g723_1_parser.c
 libavcodec/g729.h
 libavcodec/g729_parser.c
 libavcodec/get_bits.h
+libavcodec/get_buffer.c
 libavcodec/gif.c
 libavcodec/gif.h
 libavcodec/gif_parser.c
@@ -553,6 +569,9 @@ libavcodec/gsmdec_data.h
 libavcodec/gsmdec_template.c
 libavcodec/h261.h
 libavcodec/h261_parser.c
+libavcodec/h261dec.c
+libavcodec/h261enc.c
+libavcodec/h261enc.h
 libavcodec/h263.c
 libavcodec/h263.h
 libavcodec/h263_parser.c
@@ -560,8 +579,10 @@ libavcodec/h263_parser.h
 libavcodec/h263data.c
 libavcodec/h263data.h
 libavcodec/h263dec.c
+libavcodec/h263dec.h
 libavcodec/h263dsp.c
 libavcodec/h263dsp.h
+libavcodec/h263enc.h
 libavcodec/h264.h
 libavcodec/h2645_parse.c
 libavcodec/h2645_parse.h
@@ -685,6 +706,10 @@ libavcodec/libfdk-aacenc.c
 libavcodec/libgsmdec.c
 libavcodec/libgsmenc.c
 libavcodec/libilbc.c
+libavcodec/libjxl.c
+libavcodec/libjxl.h
+libavcodec/libjxldec.c
+libavcodec/libjxlenc.c
 libavcodec/libmp3lame.c
 libavcodec/libopenh264.c
 libavcodec/libopenh264.h
@@ -763,7 +788,9 @@ libavcodec/mpeg12.h
 libavcodec/mpeg12data.c
 libavcodec/mpeg12data.h
 libavcodec/mpeg12dec.c
+libavcodec/mpeg12dec.h
 libavcodec/mpeg12enc.c
+libavcodec/mpeg12enc.h
 libavcodec/mpeg12framerate.c
 libavcodec/mpeg12vlc.h
 libavcodec/mpeg2_metadata_bsf.c
@@ -777,7 +804,10 @@ libavcodec/mpeg4video.c
 libavcodec/mpeg4video.h
 libavcodec/mpeg4video_parser.c
 libavcodec/mpeg4video_parser.h
+libavcodec/mpeg4videodata.h
 libavcodec/mpeg4videodec.c
+libavcodec/mpeg4videodec.h
+libavcodec/mpeg4videoenc.h
 libavcodec/mpeg_er.c
 libavcodec/mpeg_er.h
 libavcodec/mpegaudio.c
@@ -811,13 +841,16 @@ libavcodec/mpegutils.c
 libavcodec/mpegutils.h
 libavcodec/mpegvideo.c
 libavcodec/mpegvideo.h
+libavcodec/mpegvideo_dec.c
 libavcodec/mpegvideo_enc.c
 libavcodec/mpegvideo_motion.c
 libavcodec/mpegvideo_parser.c
 libavcodec/mpegvideodata.c
 libavcodec/mpegvideodata.h
+libavcodec/mpegvideodec.h
 libavcodec/mpegvideodsp.c
 libavcodec/mpegvideodsp.h
+libavcodec/mpegvideoenc.h
 libavcodec/mpegvideoencdsp.c
 libavcodec/mpegvideoencdsp.h
 libavcodec/mqc.c
@@ -828,6 +861,8 @@ libavcodec/msgsmdec.c
 libavcodec/msgsmdec.h
 libavcodec/msmpeg4.h
 libavcodec/msmpeg4data.h
+libavcodec/msmpeg4dec.h
+libavcodec/msmpeg4enc.h
 libavcodec/msrledec.c
 libavcodec/msrledec.h
 libavcodec/neon/Makefile
@@ -883,6 +918,7 @@ libavcodec/pcm_tablegen.h
 libavcodec/pcx.c
 libavcodec/pcxenc.c
 libavcodec/pel_template.c
+libavcodec/pgs_frame_merge_bsf.c
 libavcodec/pgssubdec.c
 libavcodec/pgxdec.c
 libavcodec/pixblockdsp.c
@@ -940,6 +976,8 @@ libavcodec/pthread_frame.c
 libavcodec/pthread_internal.h
 libavcodec/pthread_slice.c
 libavcodec/put_bits.h
+libavcodec/put_golomb.h
+libavcodec/qoi_parser.c
 libavcodec/qpel_template.c
 libavcodec/qpeldsp.c
 libavcodec/qpeldsp.h
@@ -973,7 +1011,9 @@ libavcodec/rl.h
 libavcodec/rle.c
 libavcodec/rle.h
 libavcodec/rnd_avg.h
-libavcodec/rv10.h
+libavcodec/rv10dec.h
+libavcodec/rv10enc.c
+libavcodec/rv10enc.h
 libavcodec/rv34_parser.c
 libavcodec/sbc.h
 libavcodec/sbc_parser.c
@@ -1010,6 +1050,7 @@ libavcodec/targaenc.c
 libavcodec/textdec.c
 libavcodec/texturedsp.h
 libavcodec/thread.h
+libavcodec/threadframe.h
 libavcodec/tiff.c
 libavcodec/tiff.h
 libavcodec/tiff_common.c
@@ -1026,8 +1067,10 @@ libavcodec/utils.c
 libavcodec/v210_template.c
 libavcodec/v210dec.c
 libavcodec/v210dec.h
+libavcodec/v210dec_init.h
 libavcodec/v210enc.c
 libavcodec/v210enc.h
+libavcodec/v210enc_init.h
 libavcodec/v210x.c
 libavcodec/v308dec.c
 libavcodec/v308enc.c
@@ -1061,6 +1104,7 @@ libavcodec/vaapi_mjpeg.c
 libavcodec/vaapi_mpeg2.c
 libavcodec/vaapi_vp8.c
 libavcodec/vaapi_vp9.c
+libavcodec/vbn.h
 libavcodec/vc1.c
 libavcodec/vc1.h
 libavcodec/vc1_common.h
@@ -1073,14 +1117,18 @@ libavcodec/vc1dsp.c
 libavcodec/vc1dsp.h
 libavcodec/vdpau.c
 libavcodec/vdpau.h
+libavcodec/vdpau_av1.c
 libavcodec/vdpau_internal.h
 libavcodec/vdpau_mpeg12.c
 libavcodec/vdpau_vp9.c
+libavcodec/version.c
 libavcodec/version.h
+libavcodec/version_major.h
 libavcodec/videodsp.c
 libavcodec/videodsp.h
 libavcodec/videodsp_template.c
 libavcodec/videotoolbox.h
+libavcodec/vlc.c
 libavcodec/vlc.h
 libavcodec/vorbis.c
 libavcodec/vorbis.h
@@ -1147,7 +1195,9 @@ libavcodec/webvttenc.c
 libavcodec/wmv2.h
 libavcodec/wmv2data.c
 libavcodec/wmv2data.h
+libavcodec/wmv2dec.h
 libavcodec/wmv2dsp.h
+libavcodec/wmv2enc.h
 libavcodec/wrapped_avframe.c
 libavcodec/x86/Makefile
 libavcodec/x86/ac3dsp.asm
@@ -1293,7 +1343,6 @@ libavcodec/xiph.h
 libavcodec/xma_parser.c
 libavcodec/xvididct.h
 libavcodec/xvmc.h
-libavcodec/xvmc_internal.h
 libavcodec/xwd.h
 libavcodec/xwddec.c
 libavcodec/xwdenc.c
@@ -1301,6 +1350,8 @@ libavcodec/y41pdec.c
 libavcodec/y41penc.c
 libavcodec/yuv4dec.c
 libavcodec/yuv4enc.c
+libavcodec/zlib_wrapper.c
+libavcodec/zlib_wrapper.h
 libavdevice/Makefile
 libavdevice/alldevices.c
 libavdevice/alsa.c
@@ -1345,7 +1396,9 @@ libavdevice/v4l2-common.c
 libavdevice/v4l2-common.h
 libavdevice/v4l2.c
 libavdevice/v4l2enc.c
+libavdevice/version.c
 libavdevice/version.h
+libavdevice/version_major.h
 libavdevice/xcbgrab.c
 libavfilter/Makefile
 libavfilter/aarch64/Makefile
@@ -1371,6 +1424,7 @@ libavfilter/af_afftdn.c
 libavfilter/af_afftfilt.c
 libavfilter/af_afir.c
 libavfilter/af_afir.h
+libavfilter/af_afirdsp.h
 libavfilter/af_aformat.c
 libavfilter/af_afreqshift.c
 libavfilter/af_afwtdn.c
@@ -1414,6 +1468,7 @@ libavfilter/af_crossfeed.c
 libavfilter/af_crystalizer.c
 libavfilter/af_dcshift.c
 libavfilter/af_deesser.c
+libavfilter/af_dialoguenhance.c
 libavfilter/af_drmeter.c
 libavfilter/af_dynaudnorm.c
 libavfilter/af_earwax.c
@@ -1441,9 +1496,11 @@ libavfilter/af_superequalizer.c
 libavfilter/af_surround.c
 libavfilter/af_tremolo.c
 libavfilter/af_vibrato.c
+libavfilter/af_virtualbass.c
 libavfilter/af_volume.c
 libavfilter/af_volume.h
 libavfilter/af_volumedetect.c
+libavfilter/afir_template.c
 libavfilter/allfilters.c
 libavfilter/asink_anullsink.c
 libavfilter/asrc_afirsrc.c
@@ -1482,6 +1539,7 @@ libavfilter/buffersink.h
 libavfilter/buffersrc.c
 libavfilter/buffersrc.h
 libavfilter/bwdif.h
+libavfilter/colorchannelmixer_template.c
 libavfilter/colorspace.c
 libavfilter/colorspace.h
 libavfilter/colorspacedsp.c
@@ -1529,6 +1587,8 @@ libavfilter/drawutils.c
 libavfilter/drawutils.h
 libavfilter/ebur128.c
 libavfilter/ebur128.h
+libavfilter/edge_common.c
+libavfilter/edge_common.h
 libavfilter/f_bench.c
 libavfilter/f_cue.c
 libavfilter/f_drawgraph.c
@@ -1592,6 +1652,7 @@ libavfilter/opencl/neighbor.cl
 libavfilter/opencl/nlmeans.cl
 libavfilter/opencl/overlay.cl
 libavfilter/opencl/pad.cl
+libavfilter/opencl/remap.cl
 libavfilter/opencl/tonemap.cl
 libavfilter/opencl/transpose.cl
 libavfilter/opencl/unsharp.cl
@@ -1615,6 +1676,7 @@ libavfilter/settb.c
 libavfilter/signature.h
 libavfilter/signature_lookup.c
 libavfilter/split.c
+libavfilter/src_avsynctest.c
 libavfilter/src_movie.c
 libavfilter/ssim.h
 libavfilter/stereo3d.h
@@ -1630,7 +1692,9 @@ libavfilter/v360.h
 libavfilter/vaapi_vpp.c
 libavfilter/vaapi_vpp.h
 libavfilter/vaf_spectrumsynth.c
+libavfilter/version.c
 libavfilter/version.h
+libavfilter/version_major.h
 libavfilter/vf_addroi.c
 libavfilter/vf_alphamerge.c
 libavfilter/vf_amplify.c
@@ -1645,6 +1709,10 @@ libavfilter/vf_bitplanenoise.c
 libavfilter/vf_blackdetect.c
 libavfilter/vf_blackframe.c
 libavfilter/vf_blend.c
+libavfilter/vf_blend_init.h
+libavfilter/vf_blend_vulkan.c
+libavfilter/vf_blockdetect.c
+libavfilter/vf_blurdetect.c
 libavfilter/vf_bm3d.c
 libavfilter/vf_boxblur.c
 libavfilter/vf_bwdif.c
@@ -1664,6 +1732,7 @@ libavfilter/vf_colorize.c
 libavfilter/vf_colorkey.c
 libavfilter/vf_colorkey_opencl.c
 libavfilter/vf_colorlevels.c
+libavfilter/vf_colormap.c
 libavfilter/vf_colormatrix.c
 libavfilter/vf_colorspace.c
 libavfilter/vf_colortemperature.c
@@ -1708,6 +1777,7 @@ libavfilter/vf_estdif.c
 libavfilter/vf_exposure.c
 libavfilter/vf_extractplanes.c
 libavfilter/vf_fade.c
+libavfilter/vf_feedback.c
 libavfilter/vf_fftdnoiz.c
 libavfilter/vf_fftfilt.c
 libavfilter/vf_field.c
@@ -1729,12 +1799,14 @@ libavfilter/vf_frei0r.c
 libavfilter/vf_fspp.c
 libavfilter/vf_fspp.h
 libavfilter/vf_gblur.c
+libavfilter/vf_gblur_init.h
 libavfilter/vf_gblur_vulkan.c
 libavfilter/vf_geq.c
 libavfilter/vf_gradfun.c
 libavfilter/vf_grayworld.c
 libavfilter/vf_guided.c
 libavfilter/vf_hflip.c
+libavfilter/vf_hflip_init.h
 libavfilter/vf_histeq.c
 libavfilter/vf_histogram.c
 libavfilter/vf_hqdn3d.c
@@ -1777,11 +1849,13 @@ libavfilter/vf_mix.c
 libavfilter/vf_monochrome.c
 libavfilter/vf_morpho.c
 libavfilter/vf_mpdecimate.c
+libavfilter/vf_multiply.c
 libavfilter/vf_negate.c
 libavfilter/vf_neighbor.c
 libavfilter/vf_neighbor_opencl.c
 libavfilter/vf_nlmeans.c
 libavfilter/vf_nlmeans.h
+libavfilter/vf_nlmeans_init.h
 libavfilter/vf_nlmeans_opencl.c
 libavfilter/vf_nnedi.c
 libavfilter/vf_noise.c
@@ -1793,6 +1867,7 @@ libavfilter/vf_overlay.c
 libavfilter/vf_overlay.h
 libavfilter/vf_overlay_opencl.c
 libavfilter/vf_overlay_qsv.c
+libavfilter/vf_overlay_vaapi.c
 libavfilter/vf_overlay_vulkan.c
 libavfilter/vf_owdenoise.c
 libavfilter/vf_pad.c
@@ -1803,6 +1878,7 @@ libavfilter/vf_perspective.c
 libavfilter/vf_phase.c
 libavfilter/vf_photosensitivity.c
 libavfilter/vf_pixdesctest.c
+libavfilter/vf_pixelize.c
 libavfilter/vf_pp.c
 libavfilter/vf_pp7.c
 libavfilter/vf_pp7.h
@@ -1818,6 +1894,7 @@ libavfilter/vf_random.c
 libavfilter/vf_readeia608.c
 libavfilter/vf_readvitc.c
 libavfilter/vf_remap.c
+libavfilter/vf_remap_opencl.c
 libavfilter/vf_removegrain.c
 libavfilter/vf_removelogo.c
 libavfilter/vf_repeatfields.c
@@ -1841,6 +1918,7 @@ libavfilter/vf_shufflepixels.c
 libavfilter/vf_shuffleplanes.c
 libavfilter/vf_signalstats.c
 libavfilter/vf_signature.c
+libavfilter/vf_siti.c
 libavfilter/vf_smartblur.c
 libavfilter/vf_spp.c
 libavfilter/vf_spp.h
@@ -1854,6 +1932,7 @@ libavfilter/vf_swaprect.c
 libavfilter/vf_swapuv.c
 libavfilter/vf_telecine.c
 libavfilter/vf_threshold.c
+libavfilter/vf_threshold_init.h
 libavfilter/vf_thumbnail.c
 libavfilter/vf_tile.c
 libavfilter/vf_tinterlace.c
@@ -2034,6 +2113,7 @@ libavformat/argo_brp.c
 libavformat/argo_cvg.c
 libavformat/asf.c
 libavformat/asf.h
+libavformat/asf_tags.c
 libavformat/asfcrypt.c
 libavformat/asfcrypt.h
 libavformat/asfdec_f.c
@@ -2052,6 +2132,7 @@ libavformat/av1.h
 libavformat/av1dec.c
 libavformat/avc.c
 libavformat/avc.h
+libavformat/avformat.c
 libavformat/avformat.h
 libavformat/avi.h
 libavformat/avidec.c
@@ -2102,8 +2183,11 @@ libavformat/daudenc.c
 libavformat/dca_sample_rate_tab.c
 libavformat/dcstr.c
 libavformat/demux.c
+libavformat/demux.h
+libavformat/demux_utils.c
 libavformat/derf.c
 libavformat/dfa.c
+libavformat/dfpwmdec.c
 libavformat/dhav.c
 libavformat/diracdec.c
 libavformat/dnxhddec.c
@@ -2215,6 +2299,7 @@ libavformat/ingenientdec.c
 libavformat/internal.h
 libavformat/ip.c
 libavformat/ip.h
+libavformat/ipfsgateway.c
 libavformat/ipmovie.c
 libavformat/ipudec.c
 libavformat/ircam.c
@@ -2231,6 +2316,8 @@ libavformat/ivfenc.c
 libavformat/jacosubdec.c
 libavformat/jacosubenc.c
 libavformat/jpegtables.c
+libavformat/jpegxl_probe.c
+libavformat/jpegxl_probe.h
 libavformat/jvdec.c
 libavformat/kvag.c
 libavformat/latmenc.c
@@ -2311,6 +2398,8 @@ libavformat/mtaf.c
 libavformat/mtv.c
 libavformat/musx.c
 libavformat/mux.c
+libavformat/mux.h
+libavformat/mux_utils.c
 libavformat/mvdec.c
 libavformat/mvi.c
 libavformat/mxf.c
@@ -2373,6 +2462,7 @@ libavformat/rawdec.h
 libavformat/rawenc.c
 libavformat/rawenc.h
 libavformat/rawutils.c
+libavformat/rawutils.h
 libavformat/rawvideodec.c
 libavformat/rdt.c
 libavformat/rdt.h
@@ -2551,13 +2641,14 @@ libavformat/url.h
 libavformat/urldecode.c
 libavformat/urldecode.h
 libavformat/utils.c
-libavformat/v210.c
 libavformat/vag.c
 libavformat/vapoursynth.c
 libavformat/vc1dec.c
 libavformat/vc1test.c
 libavformat/vc1testenc.c
+libavformat/version.c
 libavformat/version.h
+libavformat/version_major.h
 libavformat/vividas.c
 libavformat/vivo.c
 libavformat/voc.c
@@ -2666,6 +2757,8 @@ libavutil/cpu.h
 libavutil/cpu_internal.h
 libavutil/crc.c
 libavutil/crc.h
+libavutil/csp.c
+libavutil/csp.h
 libavutil/cuda_check.h
 libavutil/des.c
 libavutil/des.h
@@ -2700,10 +2793,13 @@ libavutil/float_dsp.c
 libavutil/float_dsp.h
 libavutil/frame.c
 libavutil/frame.h
+libavutil/getenv_utf8.h
 libavutil/hash.c
 libavutil/hash.h
 libavutil/hdr_dynamic_metadata.c
 libavutil/hdr_dynamic_metadata.h
+libavutil/hdr_dynamic_vivid_metadata.c
+libavutil/hdr_dynamic_vivid_metadata.h
 libavutil/hmac.c
 libavutil/hmac.h
 libavutil/hwcontext.c
@@ -2839,7 +2935,11 @@ libavutil/tx_int32.c
 libavutil/tx_priv.h
 libavutil/tx_template.c
 libavutil/utils.c
+libavutil/uuid.c
+libavutil/uuid.h
+libavutil/version.c
 libavutil/version.h
+libavutil/version_major.h
 libavutil/video_enc_params.c
 libavutil/video_enc_params.h
 libavutil/vulkan.c
@@ -2885,7 +2985,9 @@ libpostproc/postprocess.h
 libpostproc/postprocess_altivec_template.c
 libpostproc/postprocess_internal.h
 libpostproc/postprocess_template.c
+libpostproc/version.c
 libpostproc/version.h
+libpostproc/version_major.h
 libswresample/Makefile
 libswresample/aarch64/Makefile
 libswresample/aarch64/audio_convert_init.c
@@ -2916,7 +3018,9 @@ libswresample/swresample.c
 libswresample/swresample.h
 libswresample/swresample_frame.c
 libswresample/swresample_internal.h
+libswresample/version.c
 libswresample/version.h
+libswresample/version_major.h
 libswresample/x86/Makefile
 libswresample/x86/audio_convert.asm
 libswresample/x86/audio_convert_init.c
@@ -2967,7 +3071,9 @@ libswscale/swscale.h
 libswscale/swscale_internal.h
 libswscale/swscale_unscaled.c
 libswscale/utils.c
+libswscale/version.c
 libswscale/version.h
+libswscale/version_major.h
 libswscale/vscale.c
 libswscale/x86/Makefile
 libswscale/x86/hscale_fast_bilinear_simd.c
@@ -3020,6 +3126,7 @@ tests/fate/dfa.mak
 tests/fate/dnn.mak
 tests/fate/dnxhd.mak
 tests/fate/dpcm.mak
+tests/fate/dvvideo.mak
 tests/fate/ea.mak
 tests/fate/exif.mak
 tests/fate/ffmpeg.mak
@@ -3040,6 +3147,7 @@ tests/fate/hlsenc.mak
 tests/fate/hw.mak
 tests/fate/id3v2.mak
 tests/fate/image.mak
+tests/fate/imf.mak
 tests/fate/indeo.mak
 tests/fate/lavf-audio.mak
 tests/fate/lavf-container.mak
@@ -3082,6 +3190,7 @@ tests/fate/speedhq.mak
 tests/fate/subtitles.mak
 tests/fate/truehd.mak
 tests/fate/utvideo.mak
+tests/fate/vbn.mak
 tests/fate/vcodec.mak
 tests/fate/video.mak
 tests/fate/voice.mak
@@ -3089,6 +3198,7 @@ tests/fate/vorbis.mak
 tests/fate/vpx.mak
 tests/fate/vqf.mak
 tests/fate/wavpack.mak
+tests/fate/webm-dash-manifest.mak
 tests/fate/wma.mak
 tests/fate/xvid.mak
 tools/Makefile
