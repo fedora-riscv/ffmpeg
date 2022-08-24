@@ -2817,6 +2817,7 @@ libavutil/hwcontext_opencl.c
 libavutil/hwcontext_opencl.h
 libavutil/hwcontext_qsv.c
 libavutil/hwcontext_qsv.h
+libavutil/hwcontext_stub.c
 libavutil/hwcontext_vaapi.c
 libavutil/hwcontext_vaapi.h
 libavutil/hwcontext_vdpau.c
