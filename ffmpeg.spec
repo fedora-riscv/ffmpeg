@@ -2,10 +2,8 @@
 %bcond_with upstream_tarball
 %bcond_with all_codecs
 
-# Break dependency cycles, e.g.:
-#   ffmpeg (libavcodec-free) → chromaprint → ffmpeg
-# by disabling certain optional dependencies.
-%bcond_without bootstrap
+# Break dependency cycles by disabling certain optional dependencies.
+%bcond_with bootstrap
 
 # If you want to do a build with the upstream source tarball, then set the
 # pkg_suffix to %%nil. We can't handle this with a conditional, as srpm
@@ -39,6 +37,19 @@
 %bcond_with dc1394
 %else
 %bcond_without dc1394
+%endif
+
+# Break chromaprint dependency cycle:
+#   ffmpeg (libavcodec-free) → chromaprint → ffmpeg
+%if %{with bootstrap}
+%bcond_with chromaprint
+%else
+%bcond_without chromaprint
+%endif
+
+%if 0%{?rhel}
+# Disable dependencies not offered in RHEL
+%bcond_with chromaprint
 %endif
 
 %if %{with all_codecs}
@@ -150,7 +161,7 @@ BuildRequires:  pkgconfig(libbluray)
 BuildRequires:  pkgconfig(libbs2b)
 BuildRequires:  pkgconfig(libcdio)
 BuildRequires:  pkgconfig(libcdio_paranoia)
-%if %{without bootstrap}
+%if %{with chromaprint}
 BuildRequires:  pkgconfig(libchromaprint)
 %endif
 BuildRequires:  pkgconfig(libdrm)
@@ -553,10 +564,10 @@ cp -a doc/examples/{*.c,Makefile,README} _doc/examples/
     --disable-openssl \
     --enable-bzlib \
     --enable-frei0r \
-%if %{with bootstrap}
-    --disable-chromaprint \
-%else
+%if %{with chromaprint}
     --enable-chromaprint \
+%else
+    --disable-chromaprint \
 %endif
     --enable-gcrypt \
     --enable-gnutls \
