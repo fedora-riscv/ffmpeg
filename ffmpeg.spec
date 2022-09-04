@@ -39,7 +39,24 @@
 %bcond_without dc1394
 %endif
 
-# Break chromaprint dependency cycle:
+%if 0%{?rhel}
+# Disable dependencies not offered in RHEL/EPEL
+%bcond_with crystalhd
+%bcond_with omxil
+%else
+
+# crystalhd isn't available on IBM Z
+%ifarch s390 s390x
+%bcond_with crystalhd
+%else
+%bcond_without crystalhd
+%endif
+
+%bcond_without omxil
+
+%endif
+
+# Break chromaprint dependency cycle (Fedora-only):
 #   ffmpeg (libavcodec-free) → chromaprint → ffmpeg
 %if %{with bootstrap}
 %bcond_with chromaprint
@@ -47,10 +64,6 @@
 %bcond_without chromaprint
 %endif
 
-%if 0%{?rhel}
-# Disable dependencies not offered in RHEL
-%bcond_with chromaprint
-%endif
 
 %if %{with all_codecs}
 %bcond_without rtmp
@@ -84,7 +97,7 @@
 Name:           ffmpeg
 %global pkg_name %{name}%{?pkg_suffix}
 
-Version:        5.1
+Version:        5.1.1
 Release:        1%{?dist}
 Summary:        A complete solution to record, convert and stream audio and video
 License:        GPLv3+
@@ -132,7 +145,7 @@ BuildRequires:  gnupg2
 BuildRequires:  gsm-devel
 BuildRequires:  ladspa-devel
 BuildRequires:  lame-devel
-%ifnarch s390 s390x
+%if %{with crystalhd}
 BuildRequires:  libcrystalhd-devel
 %endif
 BuildRequires:  libgcrypt-devel
@@ -167,7 +180,9 @@ BuildRequires:  pkgconfig(libchromaprint)
 BuildRequires:  pkgconfig(libdrm)
 BuildRequires:  pkgconfig(libjxl)
 BuildRequires:  pkgconfig(libmodplug)
+%if %{with omxil}
 BuildRequires:  pkgconfig(libomxil-bellagio)
+%endif
 BuildRequires:  pkgconfig(libopenjp2)
 BuildRequires:  pkgconfig(libopenmpt)
 BuildRequires:  pkgconfig(libpulse)
@@ -855,6 +870,11 @@ rm -rf %{buildroot}%{_datadir}/%{name}/examples
 %{_mandir}/man3/libswscale.3*
 
 %changelog
+* Sun Sep 04 2022 Neal Gompa <ngompa@fedoraproject.org> - 5.1.1-1
+- Update to version 5.1.1
+- Refresh dlopen headers for OpenH264 2.3.0
+- Disable omxil and crystalhd for RHEL
+
 * Wed Aug 24 2022 Neal Gompa <ngompa@fedoraproject.org> - 5.1-1
 - Rebase to version 5.1
 
