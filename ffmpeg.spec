@@ -323,11 +323,6 @@ machines have created. It supports the most obscure ancient formats up to the
 cutting edge. No matter if they were designed by some standards committee, the
 community or a corporation.
 
-This package contains also private headers for libavformat, libavcodec and
-libavutil which are needed by libav-tools to build. No other package apart
-from libav should depend on these private headers which are expected to
-break compatibility without any notice.
-
 %package -n libavcodec%{?pkg_suffix}
 Summary:        FFmpeg codec library
 Requires:       libavutil%{?pkg_suffix}%{_isa} = %{version}-%{release}
@@ -744,25 +739,6 @@ done
 %install
 %make_install V=1
 
-# Install private headers required by libav-tools
-for f in libavformat/options_table.h \
-         libavformat/os_support.h \
-         libavformat/internal.h \
-         libavcodec/options_table.h \
-         libavutil/libm.h \
-         libavutil/internal.h \
-         libavutil/colorspace.h \
-         libavutil/timer.h \
-         libavutil/x86/emms.h \
-         libavutil/aarch64/timer.h \
-         libavutil/arm/timer.h \
-         libavutil/bfin/timer.h \
-         libavutil/ppc/timer.h \
-         libavutil/x86/timer.h; do
-    install -m 0755 -d "%{buildroot}%{_includedir}/ffmpeg/private/$(dirname "${f}")"
-    cp -a ${f} "%{buildroot}%{_includedir}/ffmpeg/private/${f}"
-done
-
 # We will package is as %%doc in the devel package
 rm -rf %{buildroot}%{_datadir}/%{name}/examples
 
@@ -788,7 +764,6 @@ rm -rf %{buildroot}%{_datadir}/%{name}/examples
 %files -n %{pkg_name}-devel
 %doc MAINTAINERS doc/APIchanges doc/*.txt
 %doc _doc/examples
-%{_includedir}/%{name}/private
 
 %files -n libavcodec%{?pkg_suffix}
 %license COPYING.GPLv2 LICENSE.md
