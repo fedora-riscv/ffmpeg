@@ -71,6 +71,7 @@
 %if "%{__isa_bits}" == "64"
 %global lib64_suffix ()(64bit)
 %endif
+%global openh264_soversion 7
 
 %global av_codec_soversion 59
 %global av_device_soversion 59
@@ -85,7 +86,7 @@ Name:           ffmpeg
 %global pkg_name %{name}%{?pkg_suffix}
 
 Version:        5.0.1
-Release:        11%{?dist}
+Release:        12%{?dist}
 Summary:        A complete solution to record, convert and stream audio and video
 License:        GPLv3+
 URL:            https://ffmpeg.org/
@@ -119,6 +120,9 @@ Patch5:         ffmpeg-allow-fdk-aac-free.patch
 Patch6:         ffmpeg-fix-gnutls-priority.patch
 # http://ffmpeg.org/pipermail/ffmpeg-devel/2022-February/293194.html
 Patch7:         ffmpeg-openh264-averr-on-bad-version.patch
+# Backport fixes to recognize sdl2 with new versioning scheme
+Patch8:         0001-configure-extend-SDL-check-to-accept-all-2.x-version.patch
+Patch9:         0002-configure-fix-SDL2-version-check-for-pkg_config-fall.patch
 
 # Set up dlopen for openh264
 Patch1001:      ffmpeg-dlopen-openh264.patch
@@ -323,7 +327,7 @@ Requires:       libswresample%{?pkg_suffix}%{_isa} = %{version}-%{release}
 # We dlopen() openh264, so weak-depend on it...
 ## Note, we can do this because openh264 is provided in a default-enabled
 ## third party repository provided by Cisco.
-Recommends:     libopenh264.so.6%{?lib64_suffix}
+Recommends:     libopenh264.so.%{openh264_soversion}%{?lib64_suffix}
 
 %description -n libavcodec%{?pkg_suffix}
 The libavcodec library provides a generic encoding/decoding framework
@@ -836,6 +840,10 @@ rm -rf %{buildroot}%{_datadir}/%{name}/examples
 %{_mandir}/man3/libswscale.3*
 
 %changelog
+* Wed Oct 12 2022 Neal Gompa <ngompa@fedoraproject.org> - 5.0.1-12
+- Refresh dlopen headers and patch for OpenH264 2.3.1
+- Backport patches to fix building with newer SDL2 versions
+
 * Thu Jun 09 2022 Neal Gompa <ngompa@fedoraproject.org> - 5.0.1-11
 - Ensure libavdevice-devel is pulled in with devel metapackage
 
