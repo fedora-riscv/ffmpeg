@@ -85,8 +85,8 @@
 Name:           ffmpeg
 %global pkg_name %{name}%{?pkg_suffix}
 
-Version:        5.0.1
-Release:        12%{?dist}
+Version:        5.0.2
+Release:        1%{?dist}
 Summary:        A complete solution to record, convert and stream audio and video
 License:        GPLv3+
 URL:            https://ffmpeg.org/
@@ -121,7 +121,6 @@ Patch6:         ffmpeg-fix-gnutls-priority.patch
 # http://ffmpeg.org/pipermail/ffmpeg-devel/2022-February/293194.html
 Patch7:         ffmpeg-openh264-averr-on-bad-version.patch
 # Backport fixes to recognize sdl2 with new versioning scheme
-Patch8:         0001-configure-extend-SDL-check-to-accept-all-2.x-version.patch
 Patch9:         0002-configure-fix-SDL2-version-check-for-pkg_config-fall.patch
 
 # Set up dlopen for openh264
@@ -840,6 +839,9 @@ rm -rf %{buildroot}%{_datadir}/%{name}/examples
 %{_mandir}/man3/libswscale.3*
 
 %changelog
+* Tue Nov 22 2022 Neal Gompa <ngompa@fedoraproject.org> - 5.0.2-1
+- Update to 5.0.2
+
 * Wed Oct 12 2022 Neal Gompa <ngompa@fedoraproject.org> - 5.0.1-12
 - Refresh dlopen headers and patch for OpenH264 2.3.1
 - Backport patches to fix building with newer SDL2 versions
