@@ -741,6 +741,7 @@ libavcodec/libwebpenc.c
 libavcodec/libwebpenc_animencoder.c
 libavcodec/libwebpenc_common.c
 libavcodec/libwebpenc_common.h
+libavcodec/libzvbi-teletextdec.c
 libavcodec/log2_tab.c
 libavcodec/loongarch/Makefile
 libavcodec/lossless_videodsp.c

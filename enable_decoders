@@ -33,6 +33,7 @@ libspeex # speex
 libvorbis # libvorbis
 libvpx_vp8 # libvpx
 libvpx_vp9 # libvpx
+libzvbi_teletext # zvbi
 mjpeg # mjpegtools
 mjpeg_qsv # mjpegtools
 mp1 # twolame/lame
