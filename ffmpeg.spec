@@ -117,6 +117,8 @@ Patch2:         ffmpeg-new-coder-errors.patch
 # Allow to build with fdk-aac-free
 # See https://bugzilla.redhat.com/show_bug.cgi?id=1501522#c112
 Patch3:         ffmpeg-allow-fdk-aac-free.patch
+# Upstream fix for vulkan-headers 1.3.236.0+
+Patch4:         ffmpeg-vulkan-headers.patch
 
 # Set up dlopen for openh264
 Patch1001:      ffmpeg-dlopen-openh264.patch
