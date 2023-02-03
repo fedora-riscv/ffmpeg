@@ -98,7 +98,7 @@ Name:           ffmpeg
 %global pkg_name %{name}%{?pkg_suffix}
 
 Version:        5.1.2
-Release:        8%{?dist}
+Release:        9%{?dist}
 Summary:        A complete solution to record, convert and stream audio and video
 License:        GPLv3+
 URL:            https://ffmpeg.org/
@@ -155,6 +155,9 @@ BuildRequires:  libcrystalhd-devel
 %endif
 BuildRequires:  libgcrypt-devel
 BuildRequires:  libmysofa-devel
+BuildRequires:  libX11-devel
+BuildRequires:  libXext-devel
+BuildRequires:  libXv-devel
 BuildRequires:  make
 BuildRequires:  nasm
 BuildRequires:  perl(Pod::Man)
@@ -174,6 +177,7 @@ BuildRequires:  pkgconfig(gl)
 BuildRequires:  pkgconfig(gnutls)
 BuildRequires:  pkgconfig(libilbc)
 BuildRequires:  pkgconfig(jack)
+BuildRequires:  pkgconfig(lcms2)
 BuildRequires:  pkgconfig(libass)
 BuildRequires:  pkgconfig(libbluray)
 BuildRequires:  pkgconfig(libbs2b)
@@ -190,7 +194,9 @@ BuildRequires:  pkgconfig(libomxil-bellagio)
 %endif
 BuildRequires:  pkgconfig(libopenjp2)
 BuildRequires:  pkgconfig(libopenmpt)
+BuildRequires:  pkgconfig(libplacebo)
 BuildRequires:  pkgconfig(libpulse)
+BuildRequires:  pkgconfig(librabbitmq)
 BuildRequires:  pkgconfig(librsvg-2.0)
 BuildRequires:  pkgconfig(libssh)
 BuildRequires:  pkgconfig(libv4l2)
@@ -201,6 +207,7 @@ BuildRequires:  pkgconfig(libwebp)
 BuildRequires:  pkgconfig(libxml-2.0)
 BuildRequires:  pkgconfig(libzmq)
 BuildRequires:  pkgconfig(lilv-0)
+BuildRequires:  pkgconfig(lv2)
 BuildRequires:  pkgconfig(netcdf)
 BuildRequires:  pkgconfig(ogg)
 BuildRequires:  pkgconfig(openal)
@@ -581,6 +588,7 @@ cp -a doc/examples/{*.c,Makefile,README} _doc/examples/
     --enable-gcrypt \
     --enable-gnutls \
     --enable-ladspa \
+    --enable-lcms2 \
     --enable-libshaderc \
     --enable-vulkan \
     --disable-cuda-sdk \
@@ -618,7 +626,9 @@ cp -a doc/examples/{*.c,Makefile,README} _doc/examples/
     --enable-libopenjpeg \
     --enable-libopenmpt \
     --enable-libopus \
+    --enable-libplacebo \
     --enable-libpulse \
+    --enable-librabbitmq \
     --enable-librav1e \
     --enable-librsvg \
     --enable-librubberband \
@@ -651,6 +661,7 @@ cp -a doc/examples/{*.c,Makefile,README} _doc/examples/
 %if %{with mfx}
     --enable-libmfx \
 %endif
+    --enable-lv2 \
     --enable-vaapi \
     --enable-vdpau \
     --enable-libopencore-amrnb \
@@ -846,6 +857,9 @@ rm -rf %{buildroot}%{_datadir}/%{name}/examples
 %{_mandir}/man3/libswscale.3*
 
 %changelog
+* Mon Feb 13 2023 Yaakov Selkowitz <yselkowi@redhat.com> - 5.1.2-9
+- Enable lcms2, lv2, placebo, rabbitmq, xv
+
 * Mon Feb 13 2023 Neal Gompa <ngompa@fedoraproject.org> - 5.1.2-8
 - Disable flite for RHEL 9 as flite is too old
 
