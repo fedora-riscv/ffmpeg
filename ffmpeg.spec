@@ -91,7 +91,7 @@ Name:           ffmpeg
 %global pkg_name %{name}%{?pkg_suffix}
 
 Version:        5.1.2
-Release:        6%{?dist}
+Release:        7%{?dist}
 Summary:        A complete solution to record, convert and stream audio and video
 License:        GPLv3+
 URL:            https://ffmpeg.org/
@@ -577,6 +577,7 @@ cp -a doc/examples/{*.c,Makefile,README} _doc/examples/
     --enable-libass \
     --enable-libbluray \
     --enable-libbs2b \
+    --enable-libcaca \
     --enable-libcdio \
     --enable-libcodec2 \
     --enable-libdav1d \
@@ -585,10 +586,15 @@ cp -a doc/examples/{*.c,Makefile,README} _doc/examples/
 %endif
     --enable-libdrm \
     --enable-libfdk-aac \
+    --enable-libflite \
     --enable-libfontconfig \
     --enable-libfreetype \
     --enable-libfribidi \
+    --enable-libgme \
     --enable-libgsm \
+%if %{with dc1394}
+    --enable-libiec61883 \
+%endif
     --enable-libilbc \
     --enable-libjack \
     --enable-libjxl \
@@ -827,6 +833,9 @@ rm -rf %{buildroot}%{_datadir}/%{name}/examples
 %{_mandir}/man3/libswscale.3*
 
 %changelog
+* Fri Feb 03 2023 Yaakov Selkowitz <yselkowi@redhat.com> - 5.1.2-7
+- Properly enable caca, flite, gme, iec61883
+
 * Mon Jan 30 2023 Neal Gompa <ngompa@fedoraproject.org> - 5.1.2-6
 - Enable more approved codecs
 

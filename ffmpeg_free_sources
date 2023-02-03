@@ -1989,6 +1989,7 @@ libavdevice/alsa_dec.c
 libavdevice/alsa_enc.c
 libavdevice/avdevice.c
 libavdevice/avdevice.h
+libavdevice/caca.c
 libavdevice/decklink_common.h
 libavdevice/decklink_common_c.h
 libavdevice/decklink_dec.h
@@ -1998,6 +1999,7 @@ libavdevice/fbdev_common.c
 libavdevice/fbdev_common.h
 libavdevice/fbdev_dec.c
 libavdevice/fbdev_enc.c
+libavdevice/iec61883.c
 libavdevice/internal.h
 libavdevice/jack.c
 libavdevice/kmsgrab.c
@@ -2135,6 +2137,7 @@ libavfilter/asink_anullsink.c
 libavfilter/asrc_afirsrc.c
 libavfilter/asrc_anoisesrc.c
 libavfilter/asrc_anullsrc.c
+libavfilter/asrc_flite.c
 libavfilter/asrc_hilbert.c
 libavfilter/asrc_sinc.c
 libavfilter/asrc_sine.c
@@ -2951,6 +2954,7 @@ libavformat/jvdec.c
 libavformat/kvag.c
 libavformat/latmenc.c
 libavformat/libavformat.v
+libavformat/libgme.c
 libavformat/libmodplug.c
 libavformat/libopenmpt.c
 libavformat/libsmbclient.c
