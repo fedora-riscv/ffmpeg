@@ -39,6 +39,13 @@
 %bcond_with omxil
 %else
 
+# Disable flite because RHEL 9 flite is too old
+%if 0%{?rhel} && 0%{?rhel} <= 9
+%bcond_with flite
+%else
+%bcond_without flite
+%endif
+
 # crystalhd isn't available on IBM Z
 %ifarch s390 s390x
 %bcond_with crystalhd
@@ -91,7 +98,7 @@ Name:           ffmpeg
 %global pkg_name %{name}%{?pkg_suffix}
 
 Version:        5.1.2
-Release:        7%{?dist}
+Release:        8%{?dist}
 Summary:        A complete solution to record, convert and stream audio and video
 License:        GPLv3+
 URL:            https://ffmpeg.org/
@@ -134,7 +141,9 @@ Requires:       libswscale%{?pkg_suffix}%{_isa} = %{version}-%{release}
 
 BuildRequires:  AMF-devel
 BuildRequires:  fdk-aac-free-devel
-BuildRequires:  flite-devel
+%if %{with flite}
+BuildRequires:  flite-devel >= 2.2
+%endif
 BuildRequires:  game-music-emu-devel
 BuildRequires:  gcc
 BuildRequires:  gnupg2
@@ -588,7 +597,9 @@ cp -a doc/examples/{*.c,Makefile,README} _doc/examples/
 %endif
     --enable-libdrm \
     --enable-libfdk-aac \
+%if %{with flite}
     --enable-libflite \
+%endif
     --enable-libfontconfig \
     --enable-libfreetype \
     --enable-libfribidi \
@@ -835,6 +846,9 @@ rm -rf %{buildroot}%{_datadir}/%{name}/examples
 %{_mandir}/man3/libswscale.3*
 
 %changelog
+* Mon Feb 13 2023 Neal Gompa <ngompa@fedoraproject.org> - 5.1.2-8
+- Disable flite for RHEL 9 as flite is too old
+
 * Fri Feb 03 2023 Yaakov Selkowitz <yselkowi@redhat.com> - 5.1.2-7
 - Properly enable caca, flite, gme, iec61883
 
