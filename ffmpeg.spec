@@ -39,11 +39,15 @@
 %bcond_with omxil
 %else
 
-# Disable flite because RHEL 9 flite is too old
+# Disable some features because RHEL 9 packages are too old
 %if 0%{?rhel} && 0%{?rhel} <= 9
 %bcond_with flite
+%bcond_with lcms2
+%bcond_with placebo
 %else
 %bcond_without flite
+%bcond_without lcms2
+%bcond_without placebo
 %endif
 
 # crystalhd isn't available on IBM Z
@@ -177,7 +181,9 @@ BuildRequires:  pkgconfig(gl)
 BuildRequires:  pkgconfig(gnutls)
 BuildRequires:  pkgconfig(libilbc)
 BuildRequires:  pkgconfig(jack)
-BuildRequires:  pkgconfig(lcms2)
+%if %{with lcms2}
+BuildRequires:  pkgconfig(lcms2) >= 2.13
+%endif
 BuildRequires:  pkgconfig(libass)
 BuildRequires:  pkgconfig(libbluray)
 BuildRequires:  pkgconfig(libbs2b)
@@ -194,7 +200,9 @@ BuildRequires:  pkgconfig(libomxil-bellagio)
 %endif
 BuildRequires:  pkgconfig(libopenjp2)
 BuildRequires:  pkgconfig(libopenmpt)
-BuildRequires:  pkgconfig(libplacebo)
+%if %{with placebo}
+BuildRequires:  pkgconfig(libplacebo) >= 4.192.0
+%endif
 BuildRequires:  pkgconfig(libpulse)
 BuildRequires:  pkgconfig(librabbitmq)
 BuildRequires:  pkgconfig(librsvg-2.0)
@@ -588,7 +596,9 @@ cp -a doc/examples/{*.c,Makefile,README} _doc/examples/
     --enable-gcrypt \
     --enable-gnutls \
     --enable-ladspa \
+%if %{with lcms2}
     --enable-lcms2 \
+%endif
     --enable-libshaderc \
     --enable-vulkan \
     --disable-cuda-sdk \
@@ -626,7 +636,9 @@ cp -a doc/examples/{*.c,Makefile,README} _doc/examples/
     --enable-libopenjpeg \
     --enable-libopenmpt \
     --enable-libopus \
+%if %{with placebo}
     --enable-libplacebo \
+%endif
     --enable-libpulse \
     --enable-librabbitmq \
     --enable-librav1e \
