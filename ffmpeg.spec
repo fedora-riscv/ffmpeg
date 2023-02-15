@@ -3,7 +3,7 @@
 %bcond_with all_codecs
 
 # Break dependency cycles by disabling certain optional dependencies.
-%bcond_without bootstrap
+%bcond_with bootstrap
 
 # If you want to do a build with the upstream source tarball, then set the
 # pkg_suffix to %%nil. We can't handle this with a conditional, as srpm
@@ -102,7 +102,7 @@ Name:           ffmpeg
 %global pkg_name %{name}%{?pkg_suffix}
 
 Version:        5.1.2
-Release:        10%{?dist}
+Release:        11%{?dist}
 Summary:        A complete solution to record, convert and stream audio and video
 License:        GPLv3+
 URL:            https://ffmpeg.org/
@@ -868,6 +868,9 @@ rm -rf %{buildroot}%{_datadir}/%{name}/examples
 %{_mandir}/man3/libswscale.3*
 
 %changelog
+* Wed Feb 15 2023 Tom Callaway <spot@fedoraproject.org> - 5.1.2-11
+- bootstrap off
+
 * Wed Feb 15 2023 Tom Callaway <spot@fedoraproject.org> - 5.1.2-10
 - rebuild for libvpx (bootstrap)
 
