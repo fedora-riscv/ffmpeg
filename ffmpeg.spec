@@ -3,7 +3,7 @@
 %bcond_with all_codecs
 
 # Break dependency cycles by disabling certain optional dependencies.
-%bcond_with bootstrap
+%bcond_without bootstrap
 
 # If you want to do a build with the upstream source tarball, then set the
 # pkg_suffix to %%nil. We can't handle this with a conditional, as srpm
@@ -869,7 +869,7 @@ rm -rf %{buildroot}%{_datadir}/%{name}/examples
 
 %changelog
 * Wed Feb 15 2023 Tom Callaway <spot@fedoraproject.org> - 5.1.2-10
-- rebuild for libvpx
+- rebuild for libvpx (bootstrap)
 
 * Mon Feb 13 2023 Yaakov Selkowitz <yselkowi@redhat.com> - 5.1.2-9
 - Enable lcms2, lv2, placebo, rabbitmq, xv
