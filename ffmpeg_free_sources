@@ -2965,6 +2965,7 @@ libavformat/libavformat.v
 libavformat/libgme.c
 libavformat/libmodplug.c
 libavformat/libopenmpt.c
+libavformat/librist.c
 libavformat/libsmbclient.c
 libavformat/libsrt.c
 libavformat/libssh.c
