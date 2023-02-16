@@ -182,6 +182,7 @@ BuildRequires:  pkgconfig(libomxil-bellagio)
 BuildRequires:  pkgconfig(libopenjp2)
 BuildRequires:  pkgconfig(libopenmpt)
 BuildRequires:  pkgconfig(libpulse)
+BuildRequires:  pkgconfig(librist)
 BuildRequires:  pkgconfig(librsvg-2.0)
 BuildRequires:  pkgconfig(libssh)
 BuildRequires:  pkgconfig(libv4l2)
@@ -609,6 +610,7 @@ cp -a doc/examples/{*.c,Makefile,README} _doc/examples/
     --enable-libopus \
     --enable-libpulse \
     --enable-librav1e \
+    --enable-librist \
     --enable-librsvg \
     --enable-librubberband \
     --enable-libsnappy \
