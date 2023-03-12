@@ -2,7 +2,7 @@ From: Jan Engelhardt <jengelh@inai.de>
 Date: 2016-04-10 23:23:53.138440254 +0200
 
 Improve the error messages a bit to say what's really going on
-(in light of openSUSE's reduced build).
+(in light of a reduced build).
 
 ---
  fftools/ffmpeg.c        |    2 +-
