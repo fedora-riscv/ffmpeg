@@ -629,9 +629,7 @@ cp -a doc/examples/{*.c,Makefile,README} _doc/examples/
     --enable-librsvg \
     --enable-librubberband \
     --enable-libsnappy \
-%if %{with svtav1}
     --enable-libsvtav1 \
-%endif
     --enable-libsoxr \
     --enable-libspeex \
     --enable-libssh \
