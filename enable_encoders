@@ -22,10 +22,14 @@ adpcm_yamaha
 alac
 alias_pix
 amv
+anull
 apng # libpng
 ass # trivial
 asv1
 asv2
+av1_amf
+av1_nvenc
+av1_qsv
 ayuv # trival
 bitpacked # trivial
 bmp # trivial
@@ -57,6 +61,7 @@ h264_qsv # hardware
 h264_v4l2m2m # hardware
 h264_vaapi # hardware
 hap
+hdr
 hevc_amf # hardware
 hevc_nvenc # hardware
 hevc_qsv # hardware
@@ -179,6 +184,7 @@ v410 # trivial
 vc1_qsv # hardware
 vc1_v4l2m2m # hardware
 vc2 # dirac
+vnull
 vorbis # libvorbis
 vp8_qsv # libvpx
 vp8_v4l2m2m # libvpx
@@ -186,6 +192,7 @@ vp8_vaapi # libvpx
 vp9_qsv # libvpx
 vp9_vaapi # libvpx
 wavpack
+wbmp
 webvtt # trivial
 wmav1
 wmav2

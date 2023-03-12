@@ -54,6 +54,7 @@ adpcm_thp
 adpcm_thp_le
 adpcm_vima
 adpcm_xa
+adpcm_xmd
 adpcm_yamaha
 adpcm_zork
 alac
@@ -63,6 +64,8 @@ amrwb
 amv
 anm
 ansi # trivial
+anull
+apac
 ape
 apng # animated png
 arbc
@@ -90,8 +93,10 @@ bitpacked # trivial
 bmp # trivial
 bmv_audio
 bmv_video
+bonk
 brender_pix
 c93
+cbd2_dpcm
 ccaption
 cdgraphics
 cdtoons
@@ -146,6 +151,7 @@ flic
 flv
 fmvc
 fourxm
+ftr # fdk-aac
 g723_1
 g729
 gdv
@@ -163,6 +169,7 @@ h263p
 hap
 hca
 hcom
+hdr
 hnm4_video
 hq_hqa
 hqx
@@ -215,9 +222,11 @@ m101
 mace3
 mace6
 mdec
+media100
 metasound
 microdvd
 mimic
+misc4
 mjpeg # mjpegtools
 mjpeg_qsv # mjpegtools
 mjpegb
@@ -337,6 +346,7 @@ ra_288
 rasc
 rawvideo # trivial
 realtext
+rka
 rl2
 roq
 roq_dpcm
@@ -409,6 +419,7 @@ vcr1
 vmdaudio
 vmdvideo
 vmnc
+vnull
 vorbis # libvorbis
 vp3 # libav
 vp4 # libav
@@ -425,7 +436,11 @@ vp9_qsv # libvpx
 vp9_v4l2m2m # libvpx
 vplayer
 vqa
+vqc
+wady_dpcm
+wavarc
 wavpack
+wbmp
 wcmv
 webp # libwebp
 webvtt # trivial
