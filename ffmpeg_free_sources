@@ -1306,6 +1306,7 @@ libavcodec/nvdec_vp8.c
 libavcodec/nvdec_vp9.c
 libavcodec/nvenc.c
 libavcodec/nvenc.h
+libavcodec/nvenc_av1.c
 libavcodec/nvenc_h264.c
 libavcodec/nvenc_hevc.c
 libavcodec/on2avc.c
