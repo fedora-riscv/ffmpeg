@@ -92,7 +92,7 @@ Name:           ffmpeg
 %global pkg_name %{name}%{?pkg_suffix}
 
 Version:        6.0
-Release:        1%{?dist}
+Release:        2%{?dist}
 Summary:        A complete solution to record, convert and stream audio and video
 License:        GPL-3.0-or-later
 URL:            https://ffmpeg.org/
@@ -854,6 +854,9 @@ rm -rf %{buildroot}%{_datadir}/%{name}/examples
 %{_mandir}/man3/libswscale.3*
 
 %changelog
+* Wed Mar 22 2023 Nicolas Chauvet <kwizart@gmail.com> - 6.0-2
+- Backport upstram patches for libplacebo support
+
 * Sun Mar 12 2023 Neal Gompa <ngompa@fedoraproject.org> - 6.0-1
 - Rebase to version 6.0
 - Enable SVT-AV1 on all architectures
