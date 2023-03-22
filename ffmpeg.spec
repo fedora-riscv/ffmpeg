@@ -855,7 +855,7 @@ rm -rf %{buildroot}%{_datadir}/%{name}/examples
 
 %changelog
 * Wed Mar 22 2023 Nicolas Chauvet <kwizart@gmail.com> - 6.0-2
-- Backport upstram patches for libplacebo support
+- Backport upstream patches for libplacebo support
 
 * Sun Mar 12 2023 Neal Gompa <ngompa@fedoraproject.org> - 6.0-1
 - Rebase to version 6.0
