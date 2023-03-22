@@ -118,6 +118,9 @@ Patch2:         ffmpeg-new-coder-errors.patch
 # Allow to build with fdk-aac-free
 # See https://bugzilla.redhat.com/show_bug.cgi?id=1501522#c112
 Patch3:         ffmpeg-allow-fdk-aac-free.patch
+# Backport upstream patches for libplacebo v5.264
+Patch4:         0001-avfilter-vf_libplacebo-wrap-deprecated-opts-in-FF_AP.patch
+Patch5:         0001-avfilter-vf_libplacebo-remove-deprecated-field.patch
 
 # Set up dlopen for openh264
 Patch1001:      ffmpeg-dlopen-openh264.patch
