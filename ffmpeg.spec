@@ -101,8 +101,8 @@
 Name:           ffmpeg
 %global pkg_name %{name}%{?pkg_suffix}
 
-Version:        5.1.2
-Release:        12%{?dist}
+Version:        5.1.3
+Release:        1%{?dist}
 Summary:        A complete solution to record, convert and stream audio and video
 License:        GPLv3+
 URL:            https://ffmpeg.org/
@@ -128,8 +128,6 @@ Patch2:         ffmpeg-new-coder-errors.patch
 # Allow to build with fdk-aac-free
 # See https://bugzilla.redhat.com/show_bug.cgi?id=1501522#c112
 Patch3:         ffmpeg-allow-fdk-aac-free.patch
-# Upstream fix for vulkan-headers 1.3.236.0+
-Patch4:         ffmpeg-vulkan-headers.patch
 
 # Set up dlopen for openh264
 Patch1001:      ffmpeg-dlopen-openh264.patch
@@ -870,6 +868,9 @@ rm -rf %{buildroot}%{_datadir}/%{name}/examples
 %{_mandir}/man3/libswscale.3*
 
 %changelog
+* Tue Mar 28 2023 Yaakov Selkowitz <yselkowi@redhat.com> - 5.1.3-1
+- Update to 5.1.3
+
 * Wed Feb 15 2023 Neal Gompa <ngompa@fedoraproject.org> - 5.1.2-12
 - Enable support for the RIST protocol through librist
 
