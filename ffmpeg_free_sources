@@ -3888,13 +3888,6 @@ tests/checkasm/flacdsp.c
 tests/checkasm/float_dsp.c
 tests/checkasm/fmtconvert.c
 tests/checkasm/g722dsp.c
-tests/checkasm/h264dsp.c
-tests/checkasm/h264pred.c
-tests/checkasm/h264qpel.c
-tests/checkasm/hevc_add_res.c
-tests/checkasm/hevc_idct.c
-tests/checkasm/hevc_pel.c
-tests/checkasm/hevc_sao.c
 tests/checkasm/huffyuvdsp.c
 tests/checkasm/idctdsp.c
 tests/checkasm/jpeg2000dsp.c
@@ -3913,7 +3906,6 @@ tests/checkasm/synth_filter.c
 tests/checkasm/utvideodsp.c
 tests/checkasm/v210dec.c
 tests/checkasm/v210enc.c
-tests/checkasm/vc1dsp.c
 tests/checkasm/vf_blend.c
 tests/checkasm/vf_colorspace.c
 tests/checkasm/vf_convolution.c
