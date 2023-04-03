@@ -92,7 +92,7 @@ Name:           ffmpeg
 %global pkg_name %{name}%{?pkg_suffix}
 
 Version:        6.0
-Release:        2%{?dist}
+Release:        3%{?dist}
 Summary:        A complete solution to record, convert and stream audio and video
 License:        GPL-3.0-or-later
 URL:            https://ffmpeg.org/
@@ -854,6 +854,9 @@ rm -rf %{buildroot}%{_datadir}/%{name}/examples
 %{_mandir}/man3/libswscale.3*
 
 %changelog
+* Mon Apr 03 2023 Sandro Mani <manisandro@gmail.com> - 6.0-3
+- Rebuild (tesseract)
+
 * Wed Mar 22 2023 Nicolas Chauvet <kwizart@gmail.com> - 6.0-2
 - Backport upstream patches for libplacebo support
 
