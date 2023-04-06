@@ -85,8 +85,8 @@
 Name:           ffmpeg
 %global pkg_name %{name}%{?pkg_suffix}
 
-Version:        5.0.2
-Release:        2%{?dist}
+Version:        5.0.3
+Release:        1%{?dist}
 Summary:        A complete solution to record, convert and stream audio and video
 License:        GPLv3+
 URL:            https://ffmpeg.org/
@@ -840,6 +840,9 @@ rm -rf %{buildroot}%{_datadir}/%{name}/examples
 %{_mandir}/man3/libswscale.3*
 
 %changelog
+* Thu Apr 06 2023 Neal Gompa <ngompa@fedoraproject.org> - 5.0.3-1
+- Update to 5.0.3
+
 * Thu Feb 16 2023 Neal Gompa <ngompa@fedoraproject.org> - 5.0.2-2
 - Enable support for the RIST protocol through librist
 
