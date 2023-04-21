@@ -3,7 +3,7 @@
 %bcond_with all_codecs
 
 # Break dependency cycles by disabling certain optional dependencies.
-%bcond_with bootstrap
+%bcond_without bootstrap
 
 # If you want to do a build with the upstream source tarball, then set the
 # pkg_suffix to %%nil. We can't handle this with a conditional, as srpm
@@ -854,6 +854,9 @@ rm -rf %{buildroot}%{_datadir}/%{name}/examples
 %{_mandir}/man3/libswscale.3*
 
 %changelog
+* Fri Apr 21 2023 Liu Yang <Yang.Liu.sn@gmail.com> - 6.0-4~bootstrap
+- Boostrap for upgrade Fedora for riscv64.
+
 * Mon Apr 03 2023 Neal Gompa <ngompa@fedoraproject.org> - 6.0-4
 - Include RISC-V support sources in the tarball
 
