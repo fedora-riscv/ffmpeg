@@ -92,7 +92,7 @@ Name:           ffmpeg
 %global pkg_name %{name}%{?pkg_suffix}
 
 Version:        6.0
-Release:        4%{?dist}
+Release:        6.rv64%{?dist}
 Summary:        A complete solution to record, convert and stream audio and video
 License:        GPL-3.0-or-later
 URL:            https://ffmpeg.org/
@@ -124,6 +124,9 @@ Patch5:         0001-avfilter-vf_libplacebo-remove-deprecated-field.patch
 
 # Set up dlopen for openh264
 Patch1001:      ffmpeg-dlopen-openh264.patch
+
+# Add patch for qt-webengine
+Patch500:       ffmpeg-chromium.patch
 
 Requires:       libavcodec%{?pkg_suffix}%{_isa} = %{version}-%{release}
 Requires:       libavdevice%{?pkg_suffix}%{_isa} = %{version}-%{release}
@@ -854,6 +857,15 @@ rm -rf %{buildroot}%{_datadir}/%{name}/examples
 %{_mandir}/man3/libswscale.3*
 
 %changelog
+* Mon Jun 12 2023 Nianqing Yao <imbearchild@outlook.com> - 6.0-6.rv64
+- Add a patch to be compatible with qt5-webengine
+
+* Mon Jun 12 2023 Dominik Mierzejewski <dominik@greysector.net> - 6.0-6
+- Rebuild for libdc1394
+
+* Thu Apr 06 2023 Adam Williamson <awilliam@redhat.com> - 6.0-5
+- Rebuild (tesseract) again
+
 * Mon Apr 03 2023 Neal Gompa <ngompa@fedoraproject.org> - 6.0-4
 - Include RISC-V support sources in the tarball
 
