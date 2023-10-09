@@ -92,7 +92,7 @@ Name:           ffmpeg
 %global pkg_name %{name}%{?pkg_suffix}
 
 Version:        6.0
-Release:        11%{?dist}
+Release:        12%{?dist}
 Summary:        A complete solution to record, convert and stream audio and video
 License:        GPL-3.0-or-later
 URL:            https://ffmpeg.org/
@@ -121,6 +121,10 @@ Patch3:         ffmpeg-allow-fdk-aac-free.patch
 # Backport upstream patches for libplacebo v5.264
 Patch4:         0001-avfilter-vf_libplacebo-wrap-deprecated-opts-in-FF_AP.patch
 Patch5:         0001-avfilter-vf_libplacebo-remove-deprecated-field.patch
+
+# Backport fix for segfault when passing non-existent filter option
+# See: https://bugzilla.rpmfusion.org/show_bug.cgi?id=6773
+Patch6:         0001-fftools-ffmpeg_filter-initialize-the-o-to-silence-th.patch
 
 # Set up dlopen for openh264
 Patch1001:      ffmpeg-dlopen-openh264.patch
@@ -854,6 +858,10 @@ rm -rf %{buildroot}%{_datadir}/%{name}/examples
 %{_mandir}/man3/libswscale.3*
 
 %changelog
+* Sun Oct 08 2023 Dominik Mierzejewski <dominik@greysector.net> - 6.0-12
+- Backport upstream patch to fix segfault when passing non-existent filter
+  option (rfbz#6773)
+
 * Sat Aug 05 2023 Richard Shaw <hobbes1069@gmail.com> - 6.0-11
 - Rebuild for codec2.
 
