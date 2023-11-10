@@ -30,6 +30,7 @@ asv2
 av1_amf
 av1_nvenc
 av1_qsv
+av1_vaapi
 ayuv # trival
 bitpacked # trivial
 bmp # trivial

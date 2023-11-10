@@ -1,5 +1,4 @@
 ## module name # reason for enablement in ffmpeg (usually there is another package that already got legal review)
-aac
 aasc
 libfdk_aac # fdk-aac-free
 ac3
