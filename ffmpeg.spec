@@ -3,7 +3,7 @@
 %bcond_with all_codecs
 
 # Break dependency cycles by disabling certain optional dependencies.
-%bcond_with bootstrap
+%bcond_without bootstrap
 
 # If you want to do a build with the upstream source tarball, then set the
 # pkg_suffix to %%nil. We can't handle this with a conditional, as srpm
